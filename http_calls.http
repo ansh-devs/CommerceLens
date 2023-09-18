@@ -1,0 +1,15 @@
+POST http://localhost:50004/v1/get-user
+
+{
+  "access_token": "v2.local.9-VzuY1upkv4XPrwW_yh7E90I-xLSTBQRCmPMm6DqslTIFJPRMMz43I4lVzPoHwOFRvUmmjSjOalXu0fzn4iXqIAPn53InHRtzHoIVAhgnBI_gONCjdoJJNo8gAPriRazKvuY9ZVM43lGdmVXUGKH_D_FYryDhaxpkKUVVYmyq0XlwP3jV-B4pSqAxKHonLPz6Pc8uQanEoYGnOMGGEGMYgJJHRL1tBiOijIDoDphAcJKM4XhxHoeuw192FgzGB3xq_5KwtoXwQXi3PT6u7GyqJe4JaRwvgKUeaEXhqkaMZ22teW59oFdQ.bnVsbA"
+}
+
+###
+POST localhost:50004/v1/login
+
+{
+  "name" : "Ansh",
+  "email": "me@anshdevs.in",
+  "password": "hello",
+  "address": "address"
+}

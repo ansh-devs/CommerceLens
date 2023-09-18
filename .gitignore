@@ -1,0 +1,7 @@
+Service-Registry/
+Api-Gateway/
+.idea/
+.env
+*.env
+register_user.http
+deployments/
