@@ -3,6 +3,7 @@ package gapi
 import (
 	db "github.com/ansh-devs/microservices_project/order-service/db/generated"
 	baseproto "github.com/ansh-devs/microservices_project/order-service/proto"
+	"strconv"
 )
 
 type OrderRpcServer struct {
@@ -12,11 +13,11 @@ type OrderRpcServer struct {
 	LoginServicePORT   string
 }
 
-func NewGrpcServer(pgConn *db.Queries) *OrderRpcServer {
+func NewGrpcServer(pgConn *db.Queries, loginsrvcaddr string, loginsrvcport int) *OrderRpcServer {
 	return &OrderRpcServer{
 		Queries:                         pgConn,
 		UnimplementedOrderServiceServer: baseproto.UnimplementedOrderServiceServer{},
 		ProductServicePORT:              ":50004",
-		LoginServicePORT:                ":50002",
+		LoginServicePORT:                ":" + strconv.Itoa(loginsrvcport),
 	}
 }

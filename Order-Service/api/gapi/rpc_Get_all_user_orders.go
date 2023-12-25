@@ -32,7 +32,7 @@ func (srv *OrderRpcServer) GetAllUserOrders(ctx context.Context, req *baseproto.
 	orders, err := srv.GetAllOrdersByUserId(ctx, details.UserData.Id)
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println(err.Error())
 	}
 	var neworders []*baseproto.Order
 	for _, v := range orders {

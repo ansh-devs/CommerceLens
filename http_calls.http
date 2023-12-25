@@ -13,3 +13,11 @@ POST localhost:50004/v1/login
   "password": "hello",
   "address": "address"
 }
+
+
+###
+POST localhost:8081/v1/orders/get-order
+
+{
+  "order_id" : "123"
+}

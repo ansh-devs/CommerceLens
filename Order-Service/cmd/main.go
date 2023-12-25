@@ -1,52 +1,60 @@
-package main
+package order
 
 import (
+	"context"
+	"flag"
 	"fmt"
-	"github.com/ArthurHlt/go-eureka-client/eureka"
-	"github.com/ansh-devs/microservices_project/order-service/config"
 	"github.com/ansh-devs/microservices_project/order-service/db"
-	"github.com/ansh-devs/microservices_project/order-service/server"
+	"github.com/ansh-devs/microservices_project/order-service/order"
+	"github.com/go-kit/log"
+	"github.com/go-kit/log/level"
+	_ "github.com/lib/pq"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
 )
 
-func registerService() *eureka.Applications {
-
-	client := eureka.NewClient([]string{
-		"http://192.168.1.5:50000/eureka", //From a spring boot based eureka server
-		// add others servers here
-	})
-	instance := eureka.NewInstanceInfo("192.168.1.5", "Order-Service", "192.168.1.5", 50007, 5, false) //Create a new instance to register
-	instance.Metadata = &eureka.MetaData{
-		Map: make(map[string]string),
-	}
-	instance.Metadata.Map["foo"] = "bar" //add metadata for example
-	err := client.RegisterInstance("order-service", instance)
-	if err != nil {
-		fmt.Println(err)
-	} // Register new instance in your eureka(s)
-	apps, err := client.GetApplications() // Retrieves all applications from eureka server(s)
-	if err != nil {
-		fmt.Println(err)
-	}
-	_, err = client.GetApplication(instance.App)
-	if err != nil {
-		fmt.Println(err)
-	} // retrieve the application "test"
-	_, err = client.GetInstance(instance.App, instance.HostName)
-	if err != nil {
-		fmt.Println(err)
-	} // retrieve the instance from "test.com" inside "test"" app
-	go func() {
-		err = client.SendHeartbeat(instance.App, instance.HostName)
-		if err != nil {
-			fmt.Println(err)
-		}
-	}()
-	return apps
-}
+const dbSource = "pgsql_url"
 
 func main() {
-	config.InitEnvConfigs()
-	pgConn := db.MustConnectToPostgress(config.AppConfigs.DatabaseUrl)
-	go server.MustStartGrpcServer(pgConn, config.AppConfigs.GrpcAddr)
-	server.MustStartHttpServer(pgConn, config.AppConfigs.HttpAddr)
+	var httpAddr = flag.String("http", ":8080", "http listen address")
+	var logger log.Logger
+	{
+		logger = log.NewLogfmtLogger(os.Stderr)
+		logger = log.NewSyncLogger(logger)
+		logger = log.With(logger,
+			"service", "order_service",
+			"time", log.DefaultTimestampUTC,
+			"caller", log.DefaultCaller,
+		)
+	}
+	_ = level.Info(logger).Log("service started")
+
+	flag.Parse()
+	ctx := context.Background()
+	var srv *order.OrderService
+	{
+		dbConn := db.MustConnectToPostgress(dbSource)
+		repository := order.NewRepo(dbConn, logger)
+		srv = order.NewService(repository, logger)
+
+	}
+
+	errs := make(chan error)
+
+	go func() {
+		c := make(chan os.Signal, 1)
+		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+		errs <- fmt.Errorf("%s", <-c)
+	}()
+
+	endpoints := order.NewEndpoints(srv)
+
+	go func() {
+		fmt.Println("listening on port :", *httpAddr)
+		handler := order.NewHttpServer(ctx, endpoints)
+		errs <- http.ListenAndServe(*httpAddr, handler)
+	}()
+	_ = level.Error(logger).Log("exit", <-errs)
 }

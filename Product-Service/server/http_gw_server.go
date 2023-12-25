@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-func MustStartHttpServer(dbConn *db.Queries, httpAddr string) {
+func MustStartHttpServer(dbConn *db.Queries, httpAddr string, loginsrvcport int) {
 	muxOpts := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 		MarshalOptions: protojson.MarshalOptions{
 			UseProtoNames: true,
@@ -22,7 +22,7 @@ func MustStartHttpServer(dbConn *db.Queries, httpAddr string) {
 		},
 	})
 	gwmux := runtime.NewServeMux(muxOpts)
-	srvr := baserepo.NewGrpcServer(dbConn)
+	srvr := baserepo.NewGrpcServer(dbConn, loginsrvcport)
 	ctx, cancel := context.WithCancel(context.Background())
 	err := baseproto.RegisterProductServiceHandlerServer(ctx, gwmux, srvr)
 	if err != nil {

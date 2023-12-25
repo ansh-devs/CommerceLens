@@ -10,13 +10,13 @@ import (
 	"net"
 )
 
-func MustStartGrpcServer(dbConn *db.Queries, grpcAddr string) {
+func MustStartGrpcServer(dbConn *db.Queries, grpcAddr string, loginsrvcport int) {
 
 	lis, err := net.Listen("tcp", grpcAddr)
 	if err != nil {
 		log.Fatal(err)
 	}
-	srvr := baserepo.NewGrpcServer(dbConn)
+	srvr := baserepo.NewGrpcServer(dbConn, loginsrvcport)
 	grpcInterceptor := grpc.UnaryInterceptor(baserepo.GrpcInterceptor)
 	grpcServer := grpc.NewServer(grpcInterceptor)
 	baseproto.RegisterProductServiceServer(grpcServer, srvr)
