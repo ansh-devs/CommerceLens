@@ -5,7 +5,10 @@ import (
 	"flag"
 	"fmt"
 	"github.com/ansh-devs/microservices_project/order-service/db"
-	"github.com/ansh-devs/microservices_project/order-service/order"
+	"github.com/ansh-devs/microservices_project/order-service/endpoints"
+	"github.com/ansh-devs/microservices_project/order-service/repo"
+	"github.com/ansh-devs/microservices_project/order-service/service"
+	"github.com/ansh-devs/microservices_project/order-service/transport"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	_ "github.com/lib/pq"
@@ -33,11 +36,11 @@ func main() {
 
 	flag.Parse()
 	ctx := context.Background()
-	var srv *order.OrderService
+	var srv *service.OrderService
 	{
 		dbConn := db.MustConnectToPostgress(dbSource)
-		repository := order.NewRepo(dbConn, logger)
-		srv = order.NewService(repository, logger)
+		repository := repo.NewRepo(dbConn, logger)
+		srv = service.NewService(repository, logger)
 
 	}
 
@@ -49,11 +52,11 @@ func main() {
 		errs <- fmt.Errorf("%s", <-c)
 	}()
 
-	endpoints := order.NewEndpoints(srv)
+	endpoints := endpoints.NewEndpoints(srv)
 
 	go func() {
 		fmt.Println("listening on port :", *httpAddr)
-		handler := order.NewHttpServer(ctx, endpoints)
+		handler := transport.NewHttpServer(ctx, endpoints)
 		errs <- http.ListenAndServe(*httpAddr, handler)
 	}()
 	_ = level.Error(logger).Log("exit", <-errs)

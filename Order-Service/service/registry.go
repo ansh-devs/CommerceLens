@@ -1,12 +1,9 @@
-package order
+package service
 
 import (
-	"fmt"
 	"github.com/go-kit/log/level"
 	"github.com/hashicorp/consul/api"
-	"log"
 	"math/rand"
-	"net"
 	"strconv"
 	"strings"
 	"time"
@@ -28,7 +25,7 @@ func (s *OrderService) RegisterService(addr *string) {
 	regis := &api.AgentServiceRegistration{
 		ID:      "_instance_" + strconv.Itoa(rand.Int()),
 		Name:    "ORDER_SERVICE",
-		Tags:    []string{"order"},
+		Tags:    []string{"dto"},
 		Port:    port,
 		Address: s.getLocalIP().String(),
 		Meta:    map[string]string{"registered_at": time.Now().String()},
@@ -48,21 +45,4 @@ func (s *OrderService) UpdateHealthStatus() {
 		}
 		<-ticker.C
 	}
-}
-
-func (s *OrderService) getLocalIP() net.IP {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer func(conn net.Conn) {
-		err := conn.Close()
-		if err != nil {
-			fmt.Printf("%s\n", err.Error())
-		}
-	}(conn)
-
-	localAddress := conn.LocalAddr().(*net.UDPAddr)
-
-	return localAddress.IP
 }

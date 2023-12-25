@@ -1,8 +1,9 @@
-package order
+package Order_Service
 
 import (
 	"context"
 	"encoding/json"
+	"github.com/ansh-devs/microservices_project/order-service/dto"
 	"net/http"
 )
 
@@ -11,7 +12,7 @@ func JsonResponseEncoder(ctx context.Context, w http.ResponseWriter, resp interf
 }
 
 func JsonPlaceOrderResponseDecoder(ctx context.Context, r *http.Request) (interface{}, error) {
-	var req PlaceOrderReq
+	var req dto.PlaceOrderReq
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err
@@ -20,7 +21,7 @@ func JsonPlaceOrderResponseDecoder(ctx context.Context, r *http.Request) (interf
 }
 
 func JsonGetOrderResponseDecoder(ctx context.Context, r *http.Request) (interface{}, error) {
-	var req GetOrderReq
+	var req dto.GetOrderReq
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err
@@ -29,7 +30,7 @@ func JsonGetOrderResponseDecoder(ctx context.Context, r *http.Request) (interfac
 }
 
 func JsonCancelOrderResponseDecoder(ctx context.Context, r *http.Request) (interface{}, error) {
-	var req CancelOrderReq
+	var req dto.CancelOrderReq
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err
@@ -38,7 +39,7 @@ func JsonCancelOrderResponseDecoder(ctx context.Context, r *http.Request) (inter
 }
 
 func JsonGetAllUserOrdersResponseDecoder(ctx context.Context, r *http.Request) (interface{}, error) {
-	var req GetAllUserOrdersReq
+	var req dto.GetAllUserOrdersReq
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err

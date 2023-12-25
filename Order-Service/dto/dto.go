@@ -1,4 +1,4 @@
-package order
+package dto
 
 type (
 	Order struct {
@@ -30,7 +30,7 @@ type (
 	GetOrderResp   struct {
 		Status  string `json:"status"`
 		Message string `json:"message"`
-		Order   Order  `json:"order"`
+		Order   Order  `json:"dto"`
 	}
 	CancelOrderResp struct {
 		Status  string `json:"status"`

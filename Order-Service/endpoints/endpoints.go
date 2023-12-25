@@ -1,7 +1,9 @@
-package order
+package endpoints
 
 import (
 	"context"
+	"github.com/ansh-devs/microservices_project/order-service/dto"
+	"github.com/ansh-devs/microservices_project/order-service/service"
 	"github.com/go-kit/kit/endpoint"
 )
 
@@ -13,7 +15,7 @@ type Endpoints struct {
 	GetAllUserOrders endpoint.Endpoint
 }
 
-func NewEndpoints(s Service) *Endpoints {
+func NewEndpoints(s service.Service) *Endpoints {
 	return &Endpoints{
 		PlaceOrder:       makePlaceOrderEndpoint(s),
 		GetOrder:         makeGetOrderEndpoint(s),
@@ -22,33 +24,33 @@ func NewEndpoints(s Service) *Endpoints {
 	}
 }
 
-func makeGetAllUserOrdersEndpoint(s Service) endpoint.Endpoint {
+func makeGetAllUserOrdersEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(GetAllUserOrdersReq)
+		req := request.(dto.GetAllUserOrdersReq)
 		ok, err := s.GetAllUserOrders(ctx, req.UserID)
 		return ok, err
 	}
 }
 
-func makeCancelOrderEndpoint(s Service) endpoint.Endpoint {
+func makeCancelOrderEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(CancelOrderReq)
+		req := request.(dto.CancelOrderReq)
 		ok, err := s.PlaceOrder(ctx, req.OrderID)
 		return ok, err
 	}
 }
 
-func makeGetOrderEndpoint(s Service) endpoint.Endpoint {
+func makeGetOrderEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(GetOrderReq)
+		req := request.(dto.GetOrderReq)
 		ok, err := s.GetOrder(ctx, req.OrderID)
 		return ok, err
 	}
 }
 
-func makePlaceOrderEndpoint(s Service) endpoint.Endpoint {
+func makePlaceOrderEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
-		req := request.(PlaceOrderReq)
+		req := request.(dto.PlaceOrderReq)
 		ok, err := s.PlaceOrder(ctx, req.ProductID)
 		return ok, err
 	}
