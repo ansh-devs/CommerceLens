@@ -6,7 +6,7 @@ import (
 )
 
 type Service interface {
-	PlaceOrder(ctx context.Context, productId string) (dto.PlaceOrderResp, error)
+	PlaceOrder(ctx context.Context, productId, userId string) (dto.PlaceOrderResp, error)
 	GetOrder(ctx context.Context, productId string) (dto.GetOrderResp, error)
 	CancelOrder(ctx context.Context, productId string) (dto.CancelOrderResp, error)
 	GetAllUserOrders(ctx context.Context, userId string) (dto.GetAllUserOrdersResp, error)

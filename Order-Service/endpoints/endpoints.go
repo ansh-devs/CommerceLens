@@ -35,7 +35,7 @@ func makeGetAllUserOrdersEndpoint(s service.Service) endpoint.Endpoint {
 func makeCancelOrderEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(dto.CancelOrderReq)
-		ok, err := s.PlaceOrder(ctx, req.OrderID)
+		ok, err := s.PlaceOrder(ctx, req.OrderID, req.OrderID)
 		return ok, err
 	}
 }
@@ -51,7 +51,7 @@ func makeGetOrderEndpoint(s service.Service) endpoint.Endpoint {
 func makePlaceOrderEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(dto.PlaceOrderReq)
-		ok, err := s.PlaceOrder(ctx, req.ProductID)
+		ok, err := s.PlaceOrder(ctx, req.ProductID, req.UserID)
 		return ok, err
 	}
 }

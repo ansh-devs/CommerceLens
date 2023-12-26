@@ -14,8 +14,8 @@ type (
 	}
 
 	PlaceOrderReq struct {
-		ProductID   string `json:"product_id"`
-		AccessToken string `json:"access_token"`
+		ProductID string `json:"product_id"`
+		UserID    string `json:"user_id"`
 	}
 	GetOrderReq struct {
 		OrderID string `json:"order_id"`

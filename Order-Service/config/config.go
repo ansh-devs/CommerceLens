@@ -10,7 +10,6 @@ func InitEnvConfigs() {
 }
 
 type AppConfig struct {
-	GrpcAddr    string `mapstructure:"GRPC_ADDRESS"`
 	HttpAddr    string `mapstructure:"HTTP_ADDRESS"`
 	DatabaseUrl string `mapstructure:"DATABASE_URL"`
 }
@@ -37,10 +36,9 @@ func loadEnvVariables() (config *AppConfig) {
 	return
 }
 
-func NewServerConfig(grpcAddr string, httpAddr string, databaseUrl string) *AppConfig {
+func NewServerConfig(httpAddr string, dbUrl string) *AppConfig {
 	return &AppConfig{
-		GrpcAddr:    grpcAddr,
 		HttpAddr:    httpAddr,
-		DatabaseUrl: databaseUrl,
+		DatabaseUrl: dbUrl,
 	}
 }
