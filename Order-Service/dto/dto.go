@@ -26,11 +26,12 @@ type (
 	GetAllUserOrdersReq struct {
 		UserID string `json:"user_id"`
 	}
-	PlaceOrderResp struct{}
-	GetOrderResp   struct {
+	PlaceOrderResp struct {
+	}
+	GetOrderResp struct {
 		Status  string `json:"status"`
 		Message string `json:"message"`
-		Order   Order  `json:"dto"`
+		Order   Order  `json:"order"`
 	}
 	CancelOrderResp struct {
 		Status  string `json:"status"`

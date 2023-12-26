@@ -5,6 +5,14 @@ POST http://localhost:50004/v1/get-user
 }
 
 ###
+
+POST http://localhost:8080/v1/orders/get-order
+
+{
+  "order_id": "cf3e4c95-a1bb-48fa-90b1-72b0ce43afc8"
+}
+
+###
 POST localhost:50004/v1/login
 
 {

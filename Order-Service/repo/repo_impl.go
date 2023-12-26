@@ -3,6 +3,7 @@ package repo
 import (
 	"context"
 	"errors"
+	"fmt"
 	db "github.com/ansh-devs/microservices_project/order-service/db/generated"
 	"github.com/ansh-devs/microservices_project/order-service/dto"
 	"github.com/go-kit/log"
@@ -94,11 +95,12 @@ func (r *Repo) GetUserAllOrders(ctx context.Context, userId string) ([]dto.Order
 }
 
 func (r *Repo) GetOrder(ctx context.Context, orderId string) (dto.Order, error) {
-	_ = level.Info(r.logger).Log("method-invoked", "GetOrder")
+	_ = level.Info(r.logger).Log("method-invoked", "GetOrder for "+orderId)
 	result, err := r.db.GetOrderById(ctx, orderId)
 	if err != nil {
 		return dto.Order{}, err
 	}
+	fmt.Println(result)
 
 	return dto.Order{
 		ID:              result.ID,

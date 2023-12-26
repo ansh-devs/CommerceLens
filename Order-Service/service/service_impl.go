@@ -47,12 +47,26 @@ func (s *OrderService) PlaceOrder(ctx context.Context, productId, userId string)
 
 // GetOrder - place dto wrapper function around the method that makes calls to the repo...
 func (s *OrderService) GetOrder(ctx context.Context, productId string) (dto.GetOrderResp, error) {
-	_ = level.Info(s.logger).Log("method-invoked", "GetOrder")
-	_, err := s.repository.GetOrder(ctx, productId)
+	_ = level.Info(s.logger).Log("method-invoked", "GetOrder for "+productId)
+	result, err := s.repository.GetOrder(ctx, productId)
 	if err != nil {
 		return dto.GetOrderResp{}, err
 	}
-	return dto.GetOrderResp{}, nil
+	return dto.GetOrderResp{
+		Status:  "successful",
+		Message: "ok",
+		Order: dto.Order{
+			ID:              result.ID,
+			ProductID:       result.ProductID,
+			UserID:          result.UserID,
+			TotalCost:       result.TotalCost,
+			Username:        result.Username,
+			ProductName:     result.ProductName,
+			Description:     result.Description,
+			Price:           result.Price,
+			ShippingAddress: result.ShippingAddress,
+		},
+	}, nil
 }
 
 // CancelOrder - place dto wrapper function around the method that makes calls to the repo...

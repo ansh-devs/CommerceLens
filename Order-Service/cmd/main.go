@@ -76,6 +76,8 @@ func main() {
 	}()
 
 	endpoint := endpoints.NewEndpoints(srv)
+	srv.RegisterService(httpAddr)
+	go srv.UpdateHealthStatus()
 
 	go func() {
 		fmt.Println("listening on port :", *httpAddr)

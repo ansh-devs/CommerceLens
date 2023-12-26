@@ -12,7 +12,7 @@ func JsonResponseEncoder(ctx context.Context, w http.ResponseWriter, resp interf
 }
 
 func JsonPlaceOrderResponseDecoder(ctx context.Context, r *http.Request) (interface{}, error) {
-	var req dto.PlaceOrderReq
+	var req dto.PlaceOrderResp
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		return nil, err
