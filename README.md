@@ -4,7 +4,7 @@
 
 ## Structure
 
-![Project Structure](https://via.placeholder.com/468x300?text=App+Screenshot+Here)
+![Project Structure](https://raw.githubusercontent.com/ansh-devs/ecomm-poc/main/assets/project_scaffolding.png)
 
 
 ## API Reference
