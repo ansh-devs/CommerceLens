@@ -14,9 +14,6 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM users
 WHERE email = $1 LIMIT 1;
 
--- name: CheckUserById :one
-SELECT * FROM users
-WHERE id = $1 LIMIT 1;
 
 -- name: CheckUserIsRegistered :one
 SELECT count(*) FROM users

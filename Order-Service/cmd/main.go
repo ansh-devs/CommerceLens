@@ -4,6 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	config2 "github.com/ansh-devs/microservices_project/order-service/config"
 	"github.com/ansh-devs/microservices_project/order-service/db"
 	"github.com/ansh-devs/microservices_project/order-service/endpoints"
 	"github.com/ansh-devs/microservices_project/order-service/repo"
@@ -12,6 +13,7 @@ import (
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	_ "github.com/lib/pq"
+	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
 	"io"
@@ -21,21 +23,25 @@ import (
 	"syscall"
 )
 
-const dbSource = "pgsql_url"
-
 func main() {
-	var httpAddr = flag.String("http", ":8080", "http listen address")
-
+	config2.InitEnvConfigs()
+	var httpAddr = &config2.AppConfigs.HttpAddr
+	//var httpAddr = flag.String("http", ":8080", "http listen address")
+	tracer := opentracing.GlobalTracer()
 	cfg := &config.Configuration{
-		ServiceName: "order-service",
+		ServiceName: "Order Service",
 		Sampler: &config.SamplerConfig{
 			Type:  "const",
 			Param: 1,
 		},
+		Reporter: &config.ReporterConfig{
+			// LocalAgentHostPort - Explicitly giving jaeger host to connect as defined in docker-compose file...
+			LocalAgentHostPort: "tracer:6831",
+			LogSpans:           true,
+		},
 	}
 
 	errs := make(chan error)
-
 	tracer, closer, err := cfg.NewTracer(config.Logger(jaeger.StdLogger))
 	if err != nil {
 		errs <- fmt.Errorf("%s", err)
@@ -57,18 +63,25 @@ func main() {
 			"caller", log.DefaultCaller,
 		)
 	}
-	_ = level.Info(logger).Log("service started")
+	_ = level.Info(logger).Log("msg", "service started")
 
 	flag.Parse()
 	ctx := context.Background()
 	var srv *service.OrderService
 	{
+
+		var dbSource = fmt.Sprintf("postgres://%s:%s@%s/%s",
+			config2.AppConfigs.DatabaseUser,
+			config2.AppConfigs.DatabasePassword,
+			config2.AppConfigs.DatabaseHost,
+			config2.AppConfigs.DatabaseName,
+		)
+
 		dbConn := db.MustConnectToPostgress(dbSource)
-		repository := repo.NewRepo(dbConn, logger)
+		repository := repo.NewRepo(dbConn, logger, tracer)
 		srv = service.NewService(repository, logger, tracer)
-
 	}
-
+	//	go srv.PlaceOrder(context.Background())
 	go func() {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
@@ -80,10 +93,15 @@ func main() {
 	go srv.UpdateHealthStatus()
 
 	go func() {
-		fmt.Println("listening on port :", *httpAddr)
+		fmt.Println("listening on port", *httpAddr)
 		handler := transport.NewHttpServer(ctx, endpoint)
-
 		errs <- http.ListenAndServe(*httpAddr, handler)
 	}()
-	_ = level.Error(logger).Log("exit", <-errs)
+
+	for sig := range errs {
+		_ = level.Error(logger).Log("status", sig, "GRACEFULLY SHUTTING DOWN !")
+		_ = srv.ConsulClient.Agent().ServiceDeregister(srv.SrvID)
+		os.Exit(0)
+	}
+
 }

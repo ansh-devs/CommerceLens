@@ -10,6 +10,7 @@ type (
 		ProductName     string `json:"product_name"`
 		Description     string `json:"description"`
 		Price           string `json:"price"`
+		Status          string `json:"status"`
 		ShippingAddress string `json:"shipping_address"`
 	}
 
@@ -27,6 +28,9 @@ type (
 		UserID string `json:"user_id"`
 	}
 	PlaceOrderResp struct {
+		Status  string `json:"status"`
+		Message string `json:"message"`
+		//Order   Order  `json:"order"`
 	}
 	GetOrderResp struct {
 		Status  string `json:"status"`
@@ -37,5 +41,16 @@ type (
 		Status  string `json:"status"`
 		Message string `json:"message"`
 	}
-	GetAllUserOrdersResp struct{}
+	GetAllUserOrdersResp struct {
+		Status  string  `json:"status"`
+		Message string  `json:"message"`
+		Orders  []Order `json:"user_orders"`
+	}
+
+	Product struct {
+		ID          string `json:"id"`
+		ProductName string `json:"product_name"`
+		Description string `json:"description"`
+		Price       string `json:"price"`
+	}
 )

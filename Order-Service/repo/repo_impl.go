@@ -3,12 +3,12 @@ package repo
 import (
 	"context"
 	"errors"
-	"fmt"
 	db "github.com/ansh-devs/microservices_project/order-service/db/generated"
 	"github.com/ansh-devs/microservices_project/order-service/dto"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/google/uuid"
+	"github.com/opentracing/opentracing-go"
 	"time"
 )
 
@@ -19,26 +19,27 @@ var (
 type Repo struct {
 	db     *db.Queries
 	logger log.Logger
+	trace  opentracing.Tracer
 }
 
-func NewRepo(db *db.Queries, logger log.Logger) *Repo {
-	return &Repo{db: db, logger: log.With(logger, "layer", "repository")}
+func NewRepo(db *db.Queries, logger log.Logger, tracer opentracing.Tracer) *Repo {
+	return &Repo{db: db, logger: log.With(logger, "layer", "repository"), trace: tracer}
 }
 
-func (r *Repo) PlaceOrder(ctx context.Context, orderId, userId string) (dto.Order, error) {
+func (r *Repo) PlaceOrder(ctx context.Context, product dto.Product, user dto.NatsUser, span opentracing.Span) (dto.Order, error) {
 	tm := time.Now()
 	id := uuid.NewString()
 	createdOrder, err := r.db.CreateOrder(ctx, db.CreateOrderParams{
 		ID:          id,
-		ProductID:   id,
-		UserID:      userId,
-		TotalCost:   "$9999",
+		ProductID:   product.ID,
+		UserID:      user.ID,
+		TotalCost:   product.Price,
 		Status:      "placed",
-		Fullname:    "Username",
-		Address:     "mock_address",
-		ProductName: "mocked_product_name",
-		Description: "description",
-		Price:       "$ 9999",
+		Fullname:    user.FullName,
+		Address:     user.FullName,
+		ProductName: product.ProductName,
+		Description: product.Description,
+		Price:       product.Price,
 		CreatedAt:   tm,
 	})
 
@@ -60,15 +61,28 @@ func (r *Repo) PlaceOrder(ctx context.Context, orderId, userId string) (dto.Orde
 
 }
 
-func (r *Repo) CancelOrder(ctx context.Context, orderId string) (string, error) {
+func (r *Repo) CancelOrder(ctx context.Context, orderId string, span opentracing.Span) (string, error) {
+	sp := r.trace.StartSpan(
+		"cancel-order-db-call",
+		opentracing.ChildOf(span.Context()))
+	defer sp.Finish()
 	_ = level.Info(r.logger).Log("method-invoked", "CancelOrder")
-	// result,err:=r.db.
-	return "", nil
+	err := r.db.ChangeOrderStatusById(ctx, db.ChangeOrderStatusByIdParams{
+		ID:     orderId,
+		Status: "canceled",
+	})
+	if err != nil {
+		return "failed", err
+	}
+	return "success", nil
 }
 
-func (r *Repo) GetUserAllOrders(ctx context.Context, userId string) ([]dto.Order, error) {
+func (r *Repo) GetUserAllOrders(ctx context.Context, userId string, span opentracing.Span) ([]dto.Order, error) {
+	sp := r.trace.StartSpan(
+		"get-all-user-orders-db-call",
+		opentracing.ChildOf(span.Context()))
+	defer sp.Finish()
 	_ = level.Info(r.logger).Log("method-invoked", "GetUserAllOrders")
-
 	result, err := r.db.GetAllOrdersByUserId(ctx, userId)
 	if err != nil {
 		return []dto.Order{}, err
@@ -86,6 +100,7 @@ func (r *Repo) GetUserAllOrders(ctx context.Context, userId string) ([]dto.Order
 			ProductName:     v.ProductName,
 			Description:     v.Description,
 			Price:           v.Price,
+			Status:          v.Status,
 			ShippingAddress: v.Address,
 		}
 		resp = append(resp, model)
@@ -94,13 +109,16 @@ func (r *Repo) GetUserAllOrders(ctx context.Context, userId string) ([]dto.Order
 	return resp, nil
 }
 
-func (r *Repo) GetOrder(ctx context.Context, orderId string) (dto.Order, error) {
+func (r *Repo) GetOrder(ctx context.Context, orderId string, span opentracing.Span) (dto.Order, error) {
+	sp := r.trace.StartSpan(
+		"get-order-db-call",
+		opentracing.ChildOf(span.Context()))
+	defer sp.Finish()
 	_ = level.Info(r.logger).Log("method-invoked", "GetOrder for "+orderId)
 	result, err := r.db.GetOrderById(ctx, orderId)
 	if err != nil {
 		return dto.Order{}, err
 	}
-	fmt.Println(result)
 
 	return dto.Order{
 		ID:              result.ID,

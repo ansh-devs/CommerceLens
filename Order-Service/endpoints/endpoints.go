@@ -7,17 +7,17 @@ import (
 	"github.com/go-kit/kit/endpoint"
 )
 
-// Endpoints - endpoint layer for http
-type Endpoints struct {
-	PlaceOrder       endpoint.Endpoint
+// HttpEndpoints - endpoint layer for http
+type HttpEndpoints struct {
+	//PlaceOrder       endpoint.Endpoint
 	GetOrder         endpoint.Endpoint
 	CancelOrder      endpoint.Endpoint
 	GetAllUserOrders endpoint.Endpoint
 }
 
-func NewEndpoints(s service.Service) *Endpoints {
-	return &Endpoints{
-		PlaceOrder:       makePlaceOrderEndpoint(s),
+func NewEndpoints(s service.Service) *HttpEndpoints {
+	return &HttpEndpoints{
+		//PlaceOrder:       makePlaceOrderEndpoint(s),
 		GetOrder:         makeGetOrderEndpoint(s),
 		CancelOrder:      makeCancelOrderEndpoint(s),
 		GetAllUserOrders: makeGetAllUserOrdersEndpoint(s),
@@ -35,7 +35,7 @@ func makeGetAllUserOrdersEndpoint(s service.Service) endpoint.Endpoint {
 func makeCancelOrderEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(dto.CancelOrderReq)
-		ok, err := s.PlaceOrder(ctx, req.OrderID, req.OrderID)
+		ok, err := s.CancelOrder(ctx, req.OrderID)
 		return ok, err
 	}
 }
@@ -48,10 +48,10 @@ func makeGetOrderEndpoint(s service.Service) endpoint.Endpoint {
 	}
 }
 
-func makePlaceOrderEndpoint(s service.Service) endpoint.Endpoint {
+/*func makePlaceOrderEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		req := request.(dto.PlaceOrderReq)
 		ok, err := s.PlaceOrder(ctx, req.ProductID, req.UserID)
 		return ok, err
 	}
-}
+}*/

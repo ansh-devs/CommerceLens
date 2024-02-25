@@ -1,0 +1,100 @@
+version: '3'
+
+name: ecomm-poc
+services:
+
+  jaeger-agent:
+    container_name: jaeger
+    image: jaegertracing/all-in-one:latest
+    ports:
+      - "5775:5775/udp"
+      - "6831:6831/udp"
+      - "6832:6832/udp"
+      - "5778:5778/tcp"
+      - "16686:16686"
+      - "14268:14268"
+      - "9411:9411"
+    hostname: "tracer"
+    expose:
+      - "16685"
+    networks:
+      - consul
+    environment:
+      - MODE=prod
+      - DATACENTER=anshdevs
+    labels:
+      NAME: "jaeger-agent"
+
+  service-discovery:
+    container_name: service-discovery
+    image: hashicorp/consul:latest
+    ports:
+      - "8600:8600"
+      - "8500:8500"
+    hostname: "service-discovery"
+    expose:
+      - "8500"
+    networks:
+      - consul
+    command: agent -server -ui -node=server-1 -bootstrap-expect=1 -client="0.0.0.0" -datacenter=anshdevs
+    labels:
+      NAME: "service-discovery"
+
+  postgres:
+    container_name: "database"
+    image: "postgres:latest"
+    networks:
+      - consul
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: "1234"
+      POSTGRES_USER: "postgres"
+      POSTGRES_DB: "postgres"
+
+  order-service:
+    container_name: "order-service"
+    image: "order-service:latest"
+    networks:
+      - consul
+    depends_on:
+      - service-discovery
+      - postgres
+      - nats
+    ports:
+      - "8080:8080"
+
+  product-service:
+    container_name: "product-service"
+    image: "product-service:latest"
+    networks:
+      - consul
+    depends_on:
+      - service-discovery
+      - postgres
+      - nats
+    ports:
+      - "8082:8082"
+
+  login-service:
+    container_name: "login-service"
+    image: "login-service:latest"
+    networks:
+      - consul
+    depends_on:
+      - service-discovery
+      - postgres
+      - nats
+    ports:
+      - "8081:8081"
+
+  nats:
+    image: nats
+    ports: ["8222:8222"]
+    hostname: "nats-srvr"
+    command: "--cluster_name NATS --cluster nats://0.0.0.0:6222 --http_port 8222 --debug"
+    networks: ["consul"]
+
+networks:
+  consul:
+    driver: bridge

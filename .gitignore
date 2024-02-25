@@ -1,7 +1,7 @@
-Service-Registry/
 Api-Gateway/
 .idea/
-.env
+.github/
 *.env
-register_user.http
-deployments/
+*.http
+temp/
+openapi.yaml

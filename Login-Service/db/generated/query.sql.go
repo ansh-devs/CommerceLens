@@ -28,25 +28,6 @@ func (q *Queries) CheckUserByEmail(ctx context.Context, email string) (User, err
 	return i, err
 }
 
-const checkUserById = `-- name: CheckUserById :one
-SELECT id, email, fullname, password, address, created_at FROM users
-WHERE id = $1 LIMIT 1
-`
-
-func (q *Queries) CheckUserById(ctx context.Context, id string) (User, error) {
-	row := q.db.QueryRow(ctx, checkUserById, id)
-	var i User
-	err := row.Scan(
-		&i.ID,
-		&i.Email,
-		&i.Fullname,
-		&i.Password,
-		&i.Address,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
 const checkUserIsRegistered = `-- name: CheckUserIsRegistered :one
 SELECT count(*) FROM users
 WHERE email = $1 LIMIT 1
