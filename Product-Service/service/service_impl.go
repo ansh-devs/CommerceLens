@@ -20,8 +20,8 @@ type ProductService struct {
 	logger       log.Logger
 	ConsulClient *api.Client
 	trace        opentracing.Tracer
-	nats         *natsutil.NATSComponent
 	SrvID        string
+	nats         *natsutil.NATSComponent
 }
 
 func NewService(rep repo.Repository, logger log.Logger, tracer opentracing.Tracer) *ProductService {
@@ -35,15 +35,15 @@ func NewService(rep repo.Repository, logger log.Logger, tracer opentracing.Trace
 	nc := natsutil.NewNatsComponent(srvID)
 	err = nc.ConnectToNATS("nats://nats-srvr:4222", nil)
 	if err != nil {
-		return nil
+		fmt.Println(err)
 	}
 	return &ProductService{
 		repository:   rep,
 		logger:       log.With(logger, "layer", "service"),
 		ConsulClient: client,
 		trace:        tracer,
-		nats:         nc,
 		SrvID:        srvID,
+		nats:         nc,
 	}
 }
 

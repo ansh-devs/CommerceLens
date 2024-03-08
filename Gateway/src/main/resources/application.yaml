@@ -1,0 +1,36 @@
+
+server:
+  port: 50000
+spring:
+  application:
+    name: gateway-mvc
+  cloud:
+    compatibility-verifier:
+      enabled: false
+    consul:
+      config:
+        enabled: false
+      host: localhost
+      port: 8500
+      discovery:
+        prefer-ip-address: false
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: LOGIN-SERVICE
+          uri: lb://user-service
+          predicates:
+            - Path=/user/**
+
+        - id: ORDER-SERVICE
+          uri: lb://order-service
+          predicates:
+            - Path=/orders/**
+
+        - id: PRODUCT-SERVICE
+          uri: lb://product-service
+          predicates:
+            - Path=/products/**
+            - Method=GET, POST

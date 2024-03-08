@@ -27,7 +27,7 @@ func (s *ProductService) RegisterService(addr *string) {
 	srvRegister := &api.AgentServiceRegistration{
 		ID:      s.SrvID,
 		Name:    "PRODUCT-SERVICE",
-		Tags:    []string{"product"},
+		Tags:    []string{"order"},
 		Port:    port,
 		Address: s.getLocalIP().String(),
 		Meta:    map[string]string{"registered_at": time.Now().String()},
