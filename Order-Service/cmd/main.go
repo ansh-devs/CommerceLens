@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	config2 "github.com/ansh-devs/microservices_project/order-service/config"
@@ -66,7 +65,6 @@ func main() {
 	_ = level.Info(logger).Log("msg", "service started")
 
 	flag.Parse()
-	ctx := context.Background()
 	var srv *service.OrderService
 	{
 
@@ -94,7 +92,7 @@ func main() {
 
 	go func() {
 		fmt.Println("listening on port", *httpAddr)
-		handler := transport.NewHttpServer(ctx, endpoint)
+		handler := transport.NewHttpServer(endpoint)
 		errs <- http.ListenAndServe(*httpAddr, handler)
 	}()
 

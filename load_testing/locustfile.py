@@ -1,6 +1,4 @@
 from locust import HttpUser, task
-
-
 class OrderService (HttpUser):
     @task
     def service(self):

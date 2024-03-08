@@ -1,14 +1,13 @@
 package transport
 
 import (
-	"context"
 	"github.com/ansh-devs/microservices_project/order-service/endpoints"
 	transport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"net/http"
 )
 
-func NewHttpServer(_ context.Context, endpoints *endpoints.HttpEndpoints) http.Handler {
+func NewHttpServer(endpoints *endpoints.HttpEndpoints) http.Handler {
 	r := mux.NewRouter()
 	r.Use(JsonTypeReWrittermiddleware)
 
