@@ -17,19 +17,19 @@ func NewHttpServer(endpoints *endpoints.HttpEndpoints) http.Handler {
 		JsonResponseEncoder,
 	))*/
 
-	r.Methods("GET").Path("/v1/orders/get-order/{id}").Handler(transport.NewServer(
+	r.Methods("GET").Path("/orders/v1/get-order/{id}").Handler(transport.NewServer(
 		endpoints.GetOrder,
 		JsonGetOrderResponseDecoder,
 		JsonResponseEncoder,
 	))
 
-	r.Methods("GET").Path("/v1/orders/cancel-order").Handler(transport.NewServer(
+	r.Methods("GET").Path("/orders/v1/cancel-order").Handler(transport.NewServer(
 		endpoints.CancelOrder,
 		JsonCancelOrderResponseDecoder,
 		JsonResponseEncoder,
 	))
 
-	r.Methods("GET").Path("/v1/orders/get-user-all-orders").Handler(transport.NewServer(
+	r.Methods("GET").Path("/orders/v1/get-user-all-orders").Handler(transport.NewServer(
 		endpoints.GetAllUserOrders,
 		JsonGetAllUserOrdersResponseDecoder,
 		JsonResponseEncoder,
