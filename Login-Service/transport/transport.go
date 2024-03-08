@@ -12,19 +12,19 @@ func NewHttpServer(ctx context.Context, endpoints *endpoints.Endpoints) http.Han
 	r := mux.NewRouter()
 	r.Use(JsonTypeReWrittermiddleware)
 
-	r.Methods("POST").Path("/v1/register").Handler(transport.NewServer(
+	r.Methods("POST").Path("/user/v1/register").Handler(transport.NewServer(
 		endpoints.RegisterUser,
 		JsonRegisterUserRequestDecoder,
 		JsonResponseEncoder,
 	))
 
-	r.Methods("POST").Path("/v1/login").Handler(transport.NewServer(
+	r.Methods("POST").Path("/user/v1/login").Handler(transport.NewServer(
 		endpoints.LoginUser,
 		JsonLoginUserRequestDecoder,
 		JsonResponseEncoder,
 	))
 
-	r.Methods("GET").Path("/v1/get-user/{id}").Handler(transport.NewServer(
+	r.Methods("GET").Path("/user/v1/get-user/{id}").Handler(transport.NewServer(
 		endpoints.GetUserDetails,
 		JsonGetUserDetailsRequestDecoder,
 		JsonResponseEncoder,
