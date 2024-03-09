@@ -10,12 +10,12 @@ import (
 	"os/signal"
 	"syscall"
 
-	config2 "github.com/ansh-devs/microservices_project/order-service/config"
-	"github.com/ansh-devs/microservices_project/order-service/db"
-	"github.com/ansh-devs/microservices_project/order-service/endpoints"
-	"github.com/ansh-devs/microservices_project/order-service/repo"
-	"github.com/ansh-devs/microservices_project/order-service/service"
-	"github.com/ansh-devs/microservices_project/order-service/transport"
+	config2 "github.com/ansh-devs/ecomm-poc/order-service/config"
+	"github.com/ansh-devs/ecomm-poc/order-service/db"
+	"github.com/ansh-devs/ecomm-poc/order-service/endpoints"
+	"github.com/ansh-devs/ecomm-poc/order-service/repo"
+	"github.com/ansh-devs/ecomm-poc/order-service/service"
+	"github.com/ansh-devs/ecomm-poc/order-service/transport"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	_ "github.com/lib/pq"
@@ -78,11 +78,12 @@ func main() {
 		)
 
 		dbConn := db.MustConnectToPostgress(dbSource)
-		repository := repo.NewRepo(dbConn, logger, tracer)
-		srv = service.NewService(repository, logger, tracer)
+		repository := repo.NewPostgresRepository(dbConn, logger, tracer)
+		srv = service.NewOrderService(repository, logger, tracer)
 	}
+
 	go srv.PlaceOrder(context.Background())
-  go func() {
+	go func() {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 		errs <- fmt.Errorf("%s", <-c)
@@ -99,8 +100,8 @@ func main() {
 	}()
 
 	for sig := range errs {
-		_ = level.Error(logger).Log("status", sig, "GRACEFULLY SHUTTING DOWN !") 
-    _ = srv.ConsulClient.Agent().ServiceDeregister(srv.SrvID)
+		_ = level.Error(logger).Log("status", sig, "GRACEFULLY SHUTTING DOWN !")
+		_ = srv.ConsulClient.Agent().ServiceDeregister(srv.SrvID)
 		os.Exit(0)
 	}
 

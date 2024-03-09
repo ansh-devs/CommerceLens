@@ -19,20 +19,3 @@ type Order struct {
 	Price       string      `json:"price"`
 	CreatedAt   interface{} `json:"created_at"`
 }
-
-type Product struct {
-	ID          string      `json:"id"`
-	ProductName string      `json:"product_name"`
-	Description string      `json:"description"`
-	Price       string      `json:"price"`
-	CreatedAt   interface{} `json:"created_at"`
-}
-
-type User struct {
-	ID        string      `json:"id"`
-	Email     string      `json:"email"`
-	Fullname  string      `json:"fullname"`
-	Password  string      `json:"password"`
-	Address   string      `json:"address"`
-	CreatedAt interface{} `json:"created_at"`
-}

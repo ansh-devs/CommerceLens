@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
-	db "github.com/ansh-devs/microservices_project/product-service/db/generated"
+	db "github.com/ansh-devs/ecomm-poc/product-service/db/generated"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
 )

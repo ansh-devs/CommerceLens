@@ -2,7 +2,7 @@ package service
 
 import (
 	"context"
-	db "github.com/ansh-devs/microservices_project/product-service/db/generated"
+	db "github.com/ansh-devs/ecomm-poc/product-service/db/generated"
 )
 
 type Service interface {

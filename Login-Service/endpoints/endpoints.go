@@ -2,8 +2,8 @@ package endpoints
 
 import (
 	"context"
-	"github.com/ansh-devs/microservices_project/login-service/dto"
-	"github.com/ansh-devs/microservices_project/login-service/service"
+	"github.com/ansh-devs/ecomm-poc/login-service/dto"
+	"github.com/ansh-devs/ecomm-poc/login-service/service"
 	"github.com/go-kit/kit/endpoint"
 )
 

@@ -1,4 +1,4 @@
-module github.com/ansh-devs/microservices_project/login-service
+module github.com/ansh-devs/ecomm-poc/login-service
 
 go 1.20
 

@@ -1,4 +1,4 @@
-module github.com/ansh-devs/microservices_project/order-service
+module github.com/ansh-devs/ecomm-poc/order-service
 
 go 1.20
 

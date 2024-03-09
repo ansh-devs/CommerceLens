@@ -3,31 +3,32 @@ package service
 import (
 	"context"
 	"fmt"
-	"github.com/ansh-devs/microservices_project/order-service/dto"
-	"github.com/ansh-devs/microservices_project/order-service/natsutil"
-	"github.com/ansh-devs/microservices_project/order-service/repo"
+	"math/rand"
+	"strconv"
+	"time"
+
+	"github.com/ansh-devs/ecomm-poc/order-service/dto"
+	"github.com/ansh-devs/ecomm-poc/order-service/natsutil"
+	"github.com/ansh-devs/ecomm-poc/order-service/repo"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/hashicorp/consul/api"
 	"github.com/nats-io/nats.go"
 	"github.com/opentracing/opentracing-go"
-	"math/rand"
-	"strconv"
-	"time"
 )
 
 // OrderService - Implementation of service interface for business logic...
 type OrderService struct {
+	SrvID        string
 	repository   repo.Repository
 	logger       log.Logger
 	ConsulClient *api.Client
 	trace        opentracing.Tracer
-	SrvID        string
 	nats         *natsutil.NATSComponent
 }
 
-// NewService constructor for the OrderService...
-func NewService(rep repo.Repository, logger log.Logger, tracer opentracing.Tracer) *OrderService {
+// NewOrderService - constructor for the OrderService...
+func NewOrderService(rep repo.Repository, logger log.Logger, tracer opentracing.Tracer) *OrderService {
 	client, err := api.NewClient(&api.Config{
 		Address: "service-discovery:8500",
 	})

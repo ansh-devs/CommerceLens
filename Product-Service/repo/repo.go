@@ -2,7 +2,7 @@ package repo
 
 import (
 	"context"
-	db "github.com/ansh-devs/microservices_project/product-service/db/generated"
+	db "github.com/ansh-devs/ecomm-poc/product-service/db/generated"
 	"github.com/opentracing/opentracing-go"
 )
 

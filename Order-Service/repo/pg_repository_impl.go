@@ -3,30 +3,31 @@ package repo
 import (
 	"context"
 	"errors"
-	db "github.com/ansh-devs/microservices_project/order-service/db/generated"
-	"github.com/ansh-devs/microservices_project/order-service/dto"
+	"time"
+
+	db "github.com/ansh-devs/ecomm-poc/order-service/db/generated"
+	"github.com/ansh-devs/ecomm-poc/order-service/dto"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
-	"time"
 )
 
 var (
-	RepoErr = errors.New("unable to handle repo request")
+	ErrRepo = errors.New("unable to handle repo request")
 )
 
-type Repo struct {
+type PGRepo struct {
 	db     db.Querier
 	logger log.Logger
 	trace  opentracing.Tracer
 }
 
-func NewRepo(db db.Querier, logger log.Logger, tracer opentracing.Tracer) Repository {
-	return &Repo{db: db, logger: log.With(logger, "layer", "repository"), trace: tracer}
+func NewPostgresRepository(db db.Querier, logger log.Logger, tracer opentracing.Tracer) Repository {
+	return &PGRepo{db: db, logger: log.With(logger, "layer", "repository"), trace: tracer}
 }
 
-func (r *Repo) PlaceOrder(ctx context.Context, product dto.Product, user dto.NatsUser, span opentracing.Span) (dto.Order, error) {
+func (r *PGRepo) PlaceOrder(ctx context.Context, product dto.Product, user dto.NatsUser, span opentracing.Span) (dto.Order, error) {
 	tm := time.Now()
 	id := uuid.NewString()
 	createdOrder, err := r.db.CreateOrder(ctx, db.CreateOrderParams{
@@ -61,7 +62,7 @@ func (r *Repo) PlaceOrder(ctx context.Context, product dto.Product, user dto.Nat
 
 }
 
-func (r *Repo) CancelOrder(ctx context.Context, orderId string, span opentracing.Span) (string, error) {
+func (r *PGRepo) CancelOrder(ctx context.Context, orderId string, span opentracing.Span) (string, error) {
 	sp := r.trace.StartSpan(
 		"cancel-order-db-call",
 		opentracing.ChildOf(span.Context()))
@@ -77,7 +78,7 @@ func (r *Repo) CancelOrder(ctx context.Context, orderId string, span opentracing
 	return "success", nil
 }
 
-func (r *Repo) GetUserAllOrders(ctx context.Context, userId string, span opentracing.Span) ([]dto.Order, error) {
+func (r *PGRepo) GetUserAllOrders(ctx context.Context, userId string, span opentracing.Span) ([]dto.Order, error) {
 	sp := r.trace.StartSpan(
 		"get-all-user-orders-db-call",
 		opentracing.ChildOf(span.Context()))
@@ -109,7 +110,7 @@ func (r *Repo) GetUserAllOrders(ctx context.Context, userId string, span opentra
 	return resp, nil
 }
 
-func (r *Repo) GetOrder(ctx context.Context, orderId string, span opentracing.Span) (dto.Order, error) {
+func (r *PGRepo) GetOrder(ctx context.Context, orderId string, span opentracing.Span) (dto.Order, error) {
 	sp := r.trace.StartSpan(
 		"get-order-db-call",
 		opentracing.ChildOf(span.Context()))

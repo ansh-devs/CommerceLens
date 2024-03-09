@@ -7,11 +7,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/ansh-devs/microservices_project/order-service/db"
-	"github.com/ansh-devs/microservices_project/order-service/endpoints"
-	repo2 "github.com/ansh-devs/microservices_project/order-service/repo"
-	"github.com/ansh-devs/microservices_project/order-service/service"
-	"github.com/ansh-devs/microservices_project/order-service/transport"
+	"github.com/ansh-devs/ecomm-poc/order-service/db"
+	"github.com/ansh-devs/ecomm-poc/order-service/endpoints"
+	repo2 "github.com/ansh-devs/ecomm-poc/order-service/repo"
+	"github.com/ansh-devs/ecomm-poc/order-service/service"
+	"github.com/ansh-devs/ecomm-poc/order-service/transport"
 	opentracing "github.com/opentracing/opentracing-go"
 	suite "github.com/stretchr/testify/suite"
 )
@@ -20,12 +20,11 @@ type ServerTestSuite struct {
 	suite.Suite
 }
 
-
 func TestHttp(t *testing.T) {
 	tracer := opentracing.GlobalTracer()
 	dbConf := db.MustConnectToPostgress("")
-	repo := repo2.NewRepo(dbConf, nil, tracer)
-	svc := service.NewService(repo, nil, tracer)
+	repo := repo2.NewPostgresRepository(dbConf, nil, tracer)
+	svc := service.NewOrderService(repo, nil, tracer)
 	eps := endpoints.NewEndpoints(svc)
 	mux := transport.NewHttpServer(eps)
 	srv := httptest.NewServer(mux)

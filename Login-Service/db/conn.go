@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"fmt"
-	db "github.com/ansh-devs/microservices_project/login-service/db/generated"
+	db "github.com/ansh-devs/ecomm-poc/login-service/db/generated"
 	"github.com/jackc/pgx/v5"
 )
 

@@ -3,8 +3,8 @@ package endpoints
 import (
 	"context"
 	"fmt"
-	"github.com/ansh-devs/microservices_project/product-service/dto"
-	"github.com/ansh-devs/microservices_project/product-service/service"
+	"github.com/ansh-devs/ecomm-poc/product-service/dto"
+	"github.com/ansh-devs/ecomm-poc/product-service/service"
 	"github.com/go-kit/kit/endpoint"
 )
 

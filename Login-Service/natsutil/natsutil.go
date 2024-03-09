@@ -3,7 +3,7 @@ package natsutil
 import (
 	"bytes"
 	"encoding/gob"
-	"github.com/ansh-devs/microservices_project/login-service/dto"
+	"github.com/ansh-devs/ecomm-poc/login-service/dto"
 	"github.com/nats-io/nats.go"
 	"sync"
 )

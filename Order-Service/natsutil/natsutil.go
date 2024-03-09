@@ -3,9 +3,10 @@ package natsutil
 import (
 	"bytes"
 	"encoding/gob"
-	"github.com/ansh-devs/microservices_project/order-service/dto"
-	"github.com/nats-io/nats.go"
 	"sync"
+
+	"github.com/ansh-devs/ecomm-poc/order-service/dto"
+	"github.com/nats-io/nats.go"
 )
 
 type NATSComponent struct {
@@ -90,5 +91,5 @@ func (n *NATSComponent) DecryptMsgToUser(data []byte) (dto.NatsUser, error) {
 }
 
 func (n *NATSComponent) SendOrderNotPlacedMail() {
-
+	// not implemented yet...
 }
