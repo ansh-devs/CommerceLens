@@ -1,8 +1,15 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
 	config2 "github.com/ansh-devs/microservices_project/order-service/config"
 	"github.com/ansh-devs/microservices_project/order-service/db"
 	"github.com/ansh-devs/microservices_project/order-service/endpoints"
@@ -15,11 +22,6 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
-	"io"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func main() {
@@ -79,8 +81,8 @@ func main() {
 		repository := repo.NewRepo(dbConn, logger, tracer)
 		srv = service.NewService(repository, logger, tracer)
 	}
-	//	go srv.PlaceOrder(context.Background())
-	go func() {
+	go srv.PlaceOrder(context.Background())
+  go func() {
 		c := make(chan os.Signal, 1)
 		signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
 		errs <- fmt.Errorf("%s", <-c)
@@ -97,8 +99,8 @@ func main() {
 	}()
 
 	for sig := range errs {
-		_ = level.Error(logger).Log("status", sig, "GRACEFULLY SHUTTING DOWN !")
-		_ = srv.ConsulClient.Agent().ServiceDeregister(srv.SrvID)
+		_ = level.Error(logger).Log("status", sig, "GRACEFULLY SHUTTING DOWN !") 
+    _ = srv.ConsulClient.Agent().ServiceDeregister(srv.SrvID)
 		os.Exit(0)
 	}
 

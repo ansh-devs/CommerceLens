@@ -29,7 +29,7 @@ func NewHttpServer(endpoints *endpoints.HttpEndpoints) http.Handler {
 		JsonResponseEncoder,
 	))
 
-	r.Methods("GET").Path("/orders/v1/get-user-all-orders").Handler(transport.NewServer(
+	r.Methods("POST").Path("/orders/v1/get-user-all-orders").Handler(transport.NewServer(
 		endpoints.GetAllUserOrders,
 		JsonGetAllUserOrdersResponseDecoder,
 		JsonResponseEncoder,

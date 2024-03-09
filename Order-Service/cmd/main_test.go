@@ -1,18 +1,25 @@
 package main
 
 import (
-	"github.com/ansh-devs/microservices_project/order-service/db"
-	"github.com/ansh-devs/microservices_project/order-service/endpoints"
-	repo2 "github.com/ansh-devs/microservices_project/order-service/repo"
-	"github.com/ansh-devs/microservices_project/order-service/service"
-	"github.com/ansh-devs/microservices_project/order-service/transport"
-	"github.com/opentracing/opentracing-go"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/ansh-devs/microservices_project/order-service/db"
+	"github.com/ansh-devs/microservices_project/order-service/endpoints"
+	repo2 "github.com/ansh-devs/microservices_project/order-service/repo"
+	"github.com/ansh-devs/microservices_project/order-service/service"
+	"github.com/ansh-devs/microservices_project/order-service/transport"
+	opentracing "github.com/opentracing/opentracing-go"
+	suite "github.com/stretchr/testify/suite"
 )
+
+type ServerTestSuite struct {
+	suite.Suite
+}
+
 
 func TestHttp(t *testing.T) {
 	tracer := opentracing.GlobalTracer()
@@ -27,8 +34,8 @@ func TestHttp(t *testing.T) {
 	for _, testcase := range []struct {
 		method, url, body, want string
 	}{
-		{"GET", srv.URL + "/concat", `{"a":"1","b":"2"}`, `{"v":"12"}`},
-		{"GET", srv.URL + "/sum", `{"a":1,"b":2}`, `{"v":3}`},
+		{"GET", srv.URL + "/orders/v1/get-order/id", "", `{"v":"12"}`},
+		{"GET", srv.URL + "/orders/v1/", `{"a":1,"b":2}`, `{"v":3}`},
 	} {
 		req, _ := http.NewRequest(testcase.method, testcase.url, strings.NewReader(testcase.body))
 		resp, _ := http.DefaultClient.Do(req)

@@ -8,7 +8,7 @@ import (
 )
 
 // MustConnectToPostgress urlExample := "postgres://username:password@localhost:5432/database_name"
-func MustConnectToPostgress(uri string) *db.Queries {
+func MustConnectToPostgress(uri string) db.Querier {
 	ctx := context.Background()
 	pgconn, err := pgx.Connect(ctx, uri)
 

@@ -17,12 +17,12 @@ var (
 )
 
 type Repo struct {
-	db     *db.Queries
+	db     db.Querier
 	logger log.Logger
 	trace  opentracing.Tracer
 }
 
-func NewRepo(db *db.Queries, logger log.Logger, tracer opentracing.Tracer) *Repo {
+func NewRepo(db db.Querier, logger log.Logger, tracer opentracing.Tracer) Repository {
 	return &Repo{db: db, logger: log.With(logger, "layer", "repository"), trace: tracer}
 }
 
