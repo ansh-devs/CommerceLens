@@ -36,19 +36,24 @@ func NewOrderService(rep repo.Repository, logger log.Logger, tracer opentracing.
 		fmt.Println(err)
 	}
 	srvID := "instance_" + strconv.Itoa(rand.Intn(99))
-	nc := natsutil.NewNatsComponent(srvID)
-	err = nc.ConnectToNATS("nats://nats-srvr:4222", nil)
-	if err != nil {
-		fmt.Println(err)
-	}
+
 	return &OrderService{
 		repository:   rep,
 		logger:       log.With(logger, "layer", "service"),
 		ConsulClient: client,
 		trace:        tracer,
 		SrvID:        srvID,
-		nats:         nc,
 	}
+}
+
+func (r *OrderService) InitNATS() {
+	nc := natsutil.NewNatsComponent(r.SrvID)
+	err := nc.ConnectToNATS("nats://nats-srvr:4222", nil)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	r.nats = nc
 }
 
 // PlaceOrder - dto wrapper function around the method that makes calls to the repository.

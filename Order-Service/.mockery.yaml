@@ -1,0 +1,12 @@
+with-expecter: True
+packages:
+  github.com/ansh-devs/ecomm-poc/order-service/repo: 
+    interfaces:
+      ## TypesPackage:
+      Repository:
+        config: 
+          with-expecter: True 
+        configs:
+          - mockname: MockRequesterVariadicOneArgument
+            unroll-variadic: False
+          - mockname: MockRequesterVariadic

@@ -18,19 +18,19 @@ var (
 )
 
 type PGRepo struct {
-	db     db.Querier
-	logger log.Logger
-	trace  opentracing.Tracer
+	db.Queries
+	log.Logger
+	opentracing.Tracer
 }
 
-func NewPostgresRepository(db db.Querier, logger log.Logger, tracer opentracing.Tracer) Repository {
-	return &PGRepo{db: db, logger: log.With(logger, "layer", "repository"), trace: tracer}
+func NewPostgresRepository(db *db.Queries, logger log.Logger, tracer opentracing.Tracer) Repository {
+	return &PGRepo{*db, log.With(logger, "layer", "repository"), tracer}
 }
 
 func (r *PGRepo) PlaceOrder(ctx context.Context, product dto.Product, user dto.NatsUser, span opentracing.Span) (dto.Order, error) {
 	tm := time.Now()
 	id := uuid.NewString()
-	createdOrder, err := r.db.CreateOrder(ctx, db.CreateOrderParams{
+	createdOrder, err := r.Queries.CreateOrder(ctx, db.CreateOrderParams{
 		ID:          id,
 		ProductID:   product.ID,
 		UserID:      user.ID,
@@ -47,7 +47,7 @@ func (r *PGRepo) PlaceOrder(ctx context.Context, product dto.Product, user dto.N
 	if err != nil {
 		return dto.Order{}, err
 	}
-	_ = level.Info(r.logger).Log("method-invoked", "PlaceOrder")
+	_ = level.Info(r.Logger).Log("method-invoked", "PlaceOrder")
 	return dto.Order{
 		ID:              createdOrder.ID,
 		ProductID:       createdOrder.ProductID,
@@ -63,12 +63,12 @@ func (r *PGRepo) PlaceOrder(ctx context.Context, product dto.Product, user dto.N
 }
 
 func (r *PGRepo) CancelOrder(ctx context.Context, orderId string, span opentracing.Span) (string, error) {
-	sp := r.trace.StartSpan(
+	sp := r.Tracer.StartSpan(
 		"cancel-order-db-call",
 		opentracing.ChildOf(span.Context()))
 	defer sp.Finish()
-	_ = level.Info(r.logger).Log("method-invoked", "CancelOrder")
-	err := r.db.ChangeOrderStatusById(ctx, db.ChangeOrderStatusByIdParams{
+	_ = level.Info(r.Logger).Log("method-invoked", "CancelOrder")
+	err := r.Queries.ChangeOrderStatusById(ctx, db.ChangeOrderStatusByIdParams{
 		ID:     orderId,
 		Status: "canceled",
 	})
@@ -79,12 +79,12 @@ func (r *PGRepo) CancelOrder(ctx context.Context, orderId string, span opentraci
 }
 
 func (r *PGRepo) GetUserAllOrders(ctx context.Context, userId string, span opentracing.Span) ([]dto.Order, error) {
-	sp := r.trace.StartSpan(
+	sp := r.Tracer.StartSpan(
 		"get-all-user-orders-db-call",
 		opentracing.ChildOf(span.Context()))
 	defer sp.Finish()
-	_ = level.Info(r.logger).Log("method-invoked", "GetUserAllOrders")
-	result, err := r.db.GetAllOrdersByUserId(ctx, userId)
+	_ = level.Info(r.Logger).Log("method-invoked", "GetUserAllOrders")
+	result, err := r.Queries.GetAllOrdersByUserId(ctx, userId)
 	if err != nil {
 		return []dto.Order{}, err
 	}
@@ -111,12 +111,15 @@ func (r *PGRepo) GetUserAllOrders(ctx context.Context, userId string, span opent
 }
 
 func (r *PGRepo) GetOrder(ctx context.Context, orderId string, span opentracing.Span) (dto.Order, error) {
-	sp := r.trace.StartSpan(
+	if orderId == "" {
+		return dto.Order{}, errors.New("empty order id passed")
+	}
+	sp := r.Tracer.StartSpan(
 		"get-order-db-call",
 		opentracing.ChildOf(span.Context()))
 	defer sp.Finish()
-	_ = level.Info(r.logger).Log("method-invoked", "GetOrder for "+orderId)
-	result, err := r.db.GetOrderById(ctx, orderId)
+	_ = level.Info(r.Logger).Log("method-invoked", "GetOrder for "+orderId)
+	result, err := r.Queries.GetOrderById(ctx, orderId)
 	if err != nil {
 		return dto.Order{}, err
 	}

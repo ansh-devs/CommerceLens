@@ -80,6 +80,7 @@ func main() {
 		dbConn := db.MustConnectToPostgress(dbSource)
 		repository := repo.NewPostgresRepository(dbConn, logger, tracer)
 		srv = service.NewOrderService(repository, logger, tracer)
+		srv.InitNATS()
 	}
 
 	go srv.PlaceOrder(context.Background())

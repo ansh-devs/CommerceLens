@@ -3,6 +3,10 @@ package service
 import (
 	"context"
 	"fmt"
+	"math/rand"
+	"net"
+	"strconv"
+
 	"github.com/ansh-devs/ecomm-poc/login-service/dto"
 	"github.com/ansh-devs/ecomm-poc/login-service/natsutil"
 	"github.com/ansh-devs/ecomm-poc/login-service/repo"
@@ -13,9 +17,6 @@ import (
 	"github.com/nats-io/nats.go"
 	"github.com/opentracing/opentracing-go"
 	"golang.org/x/crypto/bcrypt"
-	"math/rand"
-	"net"
-	"strconv"
 )
 
 type LoginService struct {

@@ -4,6 +4,12 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"io"
+	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+
 	config2 "github.com/ansh-devs/ecomm-poc/login-service/config"
 	"github.com/ansh-devs/ecomm-poc/login-service/db"
 	"github.com/ansh-devs/ecomm-poc/login-service/endpoints"
@@ -16,11 +22,6 @@ import (
 	"github.com/opentracing/opentracing-go"
 	"github.com/uber/jaeger-client-go"
 	"github.com/uber/jaeger-client-go/config"
-	"io"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
 )
 
 func main() {
@@ -76,7 +77,7 @@ func main() {
 		)
 
 		dbConn := db.MustConnectToPostgress(dbSource)
-		repository := repo.NewRepo(dbConn, logger, tracer)
+		repository := repo.NewPostgresRepo(dbConn, logger, tracer)
 		srv = service.NewService(repository, logger, tracer)
 	}
 	go srv.GetUserWithNats(context.Background())

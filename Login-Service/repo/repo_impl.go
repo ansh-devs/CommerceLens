@@ -4,26 +4,27 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
+
 	db "github.com/ansh-devs/ecomm-poc/login-service/db/generated"
 	"github.com/ansh-devs/ecomm-poc/login-service/dto"
 	"github.com/go-kit/log"
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
 	"golang.org/x/crypto/bcrypt"
-	"time"
 )
 
-type Repo struct {
-	db     *db.Queries
+type PGRepo struct {
+	db     db.Querier
 	logger log.Logger
 	trace  opentracing.Tracer
 }
 
-func NewRepo(db *db.Queries, logger log.Logger, tracer opentracing.Tracer) *Repo {
-	return &Repo{db: db, logger: log.With(logger, "layer", "repository"), trace: tracer}
+func NewPostgresRepo(db db.Querier, logger log.Logger, tracer opentracing.Tracer) Repository {
+	return &PGRepo{db: db, logger: log.With(logger, "layer", "repository"), trace: tracer}
 }
 
-func (r *Repo) CreateUser(ctx context.Context, usr dto.RegisterUserRequest) (dto.User, error) {
+func (r *PGRepo) CreateUser(ctx context.Context, usr dto.RegisterUserRequest) (dto.User, error) {
 	resp, err := r.db.CheckUserIsRegistered(ctx, usr.Email)
 	if err != nil {
 		return dto.User{}, errors.New("can't create your account at this moment")
@@ -43,7 +44,7 @@ func (r *Repo) CreateUser(ctx context.Context, usr dto.RegisterUserRequest) (dto
 			CreatedAt: time.Now(),
 		})
 		if err != nil {
-			return dto.User{}, errors.New(fmt.Sprintf("error occured while creating your account : %v", err))
+			return dto.User{}, fmt.Errorf("error occured while creating your account : %v", err)
 		}
 		return dto.User{
 			ID:       createUser.ID,
@@ -56,7 +57,7 @@ func (r *Repo) CreateUser(ctx context.Context, usr dto.RegisterUserRequest) (dto
 		return dto.User{}, errors.New("account with this email id already exists")
 	}
 }
-func (r *Repo) GetUser(ctx context.Context, id string) (dto.User, error) {
+func (r *PGRepo) GetUser(ctx context.Context, id string) (dto.User, error) {
 	resp, err := r.db.GetUser(ctx, id)
 	if err != nil {
 		return dto.User{}, errors.New("can't fetch user details from database")
@@ -70,7 +71,7 @@ func (r *Repo) GetUser(ctx context.Context, id string) (dto.User, error) {
 	}, nil
 }
 
-func (r *Repo) CheckUserByEmail(ctx context.Context, email string) (dto.User, error) {
+func (r *PGRepo) CheckUserByEmail(ctx context.Context, email string) (dto.User, error) {
 	resp, err := r.db.CheckUserByEmail(ctx, email)
 	if err != nil {
 		return dto.User{}, err
