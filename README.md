@@ -28,9 +28,9 @@
   GET /orders/get-order/${id}
 ```
 
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
+| Parameter | Type     | Description                        |
+| :-------- | :------- | :--------------------------------- |
+| `id`      | `string` | **Required**. Id of order to fetch |
 
 ### Products Api
 
@@ -39,18 +39,14 @@
   GET /products/get-product/${id}
 ```
 
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
+| Parameter | Type     | Description                              |
+| :-------- | :------- | :--------------------------------------- |
+| `id`      | `string` | **Required**. Id of the product to fetch |
 
 
 ```http
   GET /products/get-all/
 ```
-
-| Parameter | Type     | Description                       |
-| :-------- | :------- | :-------------------------------- |
-| `id`      | `string` | **Required**. Id of item to fetch |
 
 
 

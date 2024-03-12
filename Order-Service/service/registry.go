@@ -1,12 +1,14 @@
 package service
 
 import (
-	"github.com/go-kit/log/level"
-	"github.com/hashicorp/consul/api"
+	"fmt"
 	"net"
 	"strconv"
 	"strings"
 	"time"
+
+	"github.com/go-kit/log/level"
+	"github.com/hashicorp/consul/api"
 )
 
 func (s *OrderService) RegisterService(addr *string) {
@@ -62,7 +64,7 @@ func (s *OrderService) getLocalIP() net.IP {
 	defer func(conn net.Conn) {
 		err := conn.Close()
 		if err != nil {
-
+			fmt.Println(err)
 		}
 	}(conn)
 

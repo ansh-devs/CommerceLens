@@ -2,9 +2,9 @@ package service
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
-	"github.com/ansh-devs/ecomm-poc/order-service/dto"
 	"github.com/ansh-devs/ecomm-poc/order-service/mocks/github.com/ansh-devs/ecomm-poc/order-service/repo"
 	"github.com/go-kit/log"
 	"github.com/google/uuid"
@@ -13,9 +13,9 @@ import (
 	"github.com/uber/jaeger-client-go/config"
 )
 
-const GetOrderMethod = "GetOrder"
+const CancelOrderMethod = "CancelOrder"
 
-func TestGetOrder(t *testing.T) {
+func TestCancelOrder(t *testing.T) {
 	cfg := &config.Configuration{Disabled: true}
 	tr, closer, _ := cfg.NewTracer()
 	defer closer.Close()
@@ -25,10 +25,9 @@ func TestGetOrder(t *testing.T) {
 	spn := tr.StartSpan("test_span")
 	newCtx := opentracing.ContextWithSpan(ctx, spn)
 	logger := log.NewNopLogger()
-	mockedRepo.On(GetOrderMethod, newCtx, id, spn).Return(dto.Order{ID: id}, nil)
+	mockedRepo.On(CancelOrderMethod, newCtx, id, spn).Return(fmt.Sprint("success"), nil)
 	svc := NewOrderService(mockedRepo, logger, tr)
-	resp, err := svc.GetOrder(ctx, id)
+	resp, err := svc.CancelOrder(ctx, id)
 	assert.NoError(t, err)
-	assert.Equal(t, id, resp.Order.ID)
 	assert.Equal(t, "successful", resp.Status)
 }

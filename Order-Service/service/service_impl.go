@@ -122,17 +122,24 @@ func (s *OrderService) CancelOrder(ctx context.Context, orderId string) (dto.Can
 	spn := s.trace.StartSpan("cancel-order")
 	defer spn.Finish()
 	newCtx := opentracing.ContextWithSpan(ctx, spn)
-	_, err := s.repository.CancelOrder(newCtx, orderId, spn)
+	result, err := s.repository.CancelOrder(newCtx, orderId, spn)
 	if err != nil {
 		return dto.CancelOrderResp{
 			Status:  "failed",
 			Message: "can't cancel the order",
 		}, nil
 	}
-	return dto.CancelOrderResp{
-		Status:  "successful",
-		Message: "Order Cancelled successfully.",
-	}, nil
+	if result == "success" {
+		return dto.CancelOrderResp{
+			Status:  "successful",
+			Message: "Order Cancelled successfully.",
+		}, nil
+	} else {
+		return dto.CancelOrderResp{
+			Status:  "failed",
+			Message: "can't cancel the order",
+		}, nil
+	}
 }
 
 // GetAllUserOrders - place dto wrapper function around the method that makes calls to the repo...
