@@ -122,23 +122,25 @@ func (s *OrderService) CancelOrder(ctx context.Context, orderId string) (dto.Can
 	spn := s.trace.StartSpan("cancel-order")
 	defer spn.Finish()
 	newCtx := opentracing.ContextWithSpan(ctx, spn)
-	result, err := s.repository.CancelOrder(newCtx, orderId, spn)
+	resp, err := s.repository.CancelOrder(newCtx, orderId, spn)
 	if err != nil {
 		return dto.CancelOrderResp{
 			Status:  "failed",
-			Message: "can't cancel the order",
+			Message: err.Error(),
 		}, nil
 	}
-	if result == "success" {
-		return dto.CancelOrderResp{
-			Status:  "successful",
-			Message: "Order Cancelled successfully.",
-		}, nil
-	} else {
+	if resp == "failed" {
 		return dto.CancelOrderResp{
 			Status:  "failed",
-			Message: "can't cancel the order",
+			Message: fmt.Sprintf("failed "),
 		}, nil
+
+	} else {
+		return dto.CancelOrderResp{
+			Status:  "successful",
+			Message: "successfully canceled the order",
+		}, nil
+
 	}
 }
 

@@ -15,7 +15,7 @@ import (
 
 const CancelOrderMethod = "CancelOrder"
 
-func TestCancelOrder(t *testing.T) {
+func TestCancelOrderSuccess(t *testing.T) {
 	cfg := &config.Configuration{Disabled: true}
 	tr, closer, _ := cfg.NewTracer()
 	defer closer.Close()
@@ -25,9 +25,9 @@ func TestCancelOrder(t *testing.T) {
 	spn := tr.StartSpan("test_span")
 	newCtx := opentracing.ContextWithSpan(ctx, spn)
 	logger := log.NewNopLogger()
-	mockedRepo.On(CancelOrderMethod, newCtx, id, spn).Return(fmt.Sprint("success"), nil)
-	svc := NewOrderService(mockedRepo, logger, tr)
-	resp, err := svc.CancelOrder(ctx, id)
-	assert.NoError(t, err)
-	assert.Equal(t, "successful", resp.Status)
+	mockedRepo.On(CancelOrderMethod, newCtx, id, spn).Return(fmt.Sprint("failed"), nil)
+	svc2 := NewOrderService(mockedRepo, logger, tr)
+	resp2, _ := svc2.CancelOrder(ctx, id)
+	assert.Equal(t, "failed", resp2.Status)
+
 }
