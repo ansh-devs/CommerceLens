@@ -152,7 +152,11 @@ func (s *OrderService) GetAllUserOrders(ctx context.Context, userId string) (dto
 	newCtx := opentracing.ContextWithSpan(ctx, spn)
 	orders, err := s.repository.GetUserAllOrders(newCtx, userId, spn)
 	if err != nil {
-		return dto.GetAllUserOrdersResp{}, err
+		return dto.GetAllUserOrdersResp{
+			Status:  "failed",
+			Message: "failed to fetch your orders",
+			Orders:  nil,
+		}, err
 	}
 	return dto.GetAllUserOrdersResp{
 		Status:  "successful",
