@@ -1,0 +1,347 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>service: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/ansh-devs/ecomm-poc/order-service/service/registry.go (0.0%)</option>
+				
+				<option value="file1">github.com/ansh-devs/ecomm-poc/order-service/service/service_impl.go (45.6%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">package service
+
+import (
+        "fmt"
+        "net"
+        "strconv"
+        "strings"
+        "time"
+
+        "github.com/go-kit/log/level"
+        "github.com/hashicorp/consul/api"
+)
+
+func (s *OrderService) RegisterService(addr *string) <span class="cov0" title="0">{
+        ttl := time.Second * 2
+        checkClient := &amp;api.AgentServiceCheck{
+                CheckID:                        "service_alive" + s.SrvID,
+                Name:                           "ORDER-SERVICE",
+                TTL:                            ttl.String(),
+                TLSSkipVerify:                  true,
+                DeregisterCriticalServiceAfter: ttl.String(),
+                Notes:                          "Agent alive",
+        }
+
+        port, err := strconv.Atoi(strings.Trim(*addr, ":"))
+        if err != nil </span><span class="cov0" title="0">{
+                _ = level.Error(s.logger).Log("err", err)
+        }</span>
+        <span class="cov0" title="0">srvRegister := &amp;api.AgentServiceRegistration{
+                ID:      s.SrvID,
+                Name:    "ORDER-SERVICE",
+                Tags:    []string{"order"},
+                Port:    port,
+                Address: s.getLocalIP().String(),
+                Meta:    map[string]string{"registered_at": time.Now().String()},
+                Check:   checkClient,
+        }
+
+        if err := s.ConsulClient.Agent().ServiceRegister(srvRegister); err != nil </span><span class="cov0" title="0">{
+                _ = level.Error(s.logger).Log("err", err)
+        }</span>
+}
+
+func (s *OrderService) UpdateHealthStatus() <span class="cov0" title="0">{
+        ticker := time.NewTicker(time.Second * 1)
+        for </span><span class="cov0" title="0">{
+
+                if err := s.ConsulClient.Agent().UpdateTTL(
+                        "service_alive"+s.SrvID,
+                        "[MESSAGE]: Agent reachable",
+                        api.HealthPassing,
+                ); err != nil </span><span class="cov0" title="0">{
+                        _ = level.Error(s.logger).Log("err", err)
+                }</span>
+                <span class="cov0" title="0">&lt;-ticker.C</span>
+        }
+}
+
+func (s *OrderService) getLocalIP() net.IP <span class="cov0" title="0">{
+        conn, err := net.Dial("udp", "8.8.8.8:80")
+        if err != nil </span><span class="cov0" title="0">{
+                _ = level.Error(s.logger).Log("err", "can't get local ip")
+        }</span>
+        <span class="cov0" title="0">defer func(conn net.Conn) </span><span class="cov0" title="0">{
+                err := conn.Close()
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Println(err)
+                }</span>
+        }(conn)
+
+        <span class="cov0" title="0">localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+        return localAddr.IP</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package service
+
+import (
+        "context"
+        "fmt"
+        "math/rand"
+        "strconv"
+        "time"
+
+        "github.com/ansh-devs/ecomm-poc/order-service/dto"
+        "github.com/ansh-devs/ecomm-poc/order-service/natsutil"
+        "github.com/ansh-devs/ecomm-poc/order-service/repo"
+        "github.com/go-kit/log"
+        "github.com/go-kit/log/level"
+        "github.com/hashicorp/consul/api"
+        "github.com/nats-io/nats.go"
+        "github.com/opentracing/opentracing-go"
+)
+
+// OrderService - Implementation of service interface for business logic...
+type OrderService struct {
+        SrvID        string
+        repository   repo.Repository
+        logger       log.Logger
+        ConsulClient *api.Client
+        trace        opentracing.Tracer
+        nats         *natsutil.NATSComponent
+}
+
+// NewOrderService - constructor for the OrderService...
+func NewOrderService(rep repo.Repository, logger log.Logger, tracer opentracing.Tracer) *OrderService <span class="cov8" title="1">{
+        client, err := api.NewClient(&amp;api.Config{
+                Address: "service-discovery:8500",
+        })
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+        }</span>
+        <span class="cov8" title="1">srvID := "instance_" + strconv.Itoa(rand.Intn(99))
+
+        return &amp;OrderService{
+                repository:   rep,
+                logger:       log.With(logger, "layer", "service"),
+                ConsulClient: client,
+                trace:        tracer,
+                SrvID:        srvID,
+        }</span>
+}
+
+func (r *OrderService) InitNATS() <span class="cov0" title="0">{
+        nc := natsutil.NewNatsComponent(r.SrvID)
+        err := nc.ConnectToNATS("nats://nats-srvr:4222", nil)
+        if err != nil </span><span class="cov0" title="0">{
+                fmt.Println(err)
+        }</span>
+
+        <span class="cov0" title="0">r.nats = nc</span>
+}
+
+// PlaceOrder - dto wrapper function around the method that makes calls to the repository.
+func (s *OrderService) PlaceOrder(ctx context.Context) <span class="cov0" title="0">{
+        msgHandler := func(msg *nats.Msg) </span><span class="cov0" title="0">{
+                spn := s.trace.StartSpan("place-order")
+                defer spn.Finish()
+                _ = level.Info(s.logger).Log("method-invoked", "PlaceOrder")
+                order, _ := s.nats.DecryptMsgToOrder(msg.Data)
+                buffUserID, err := s.nats.UserIdEncoder(order.UserId)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Println(err)
+                }</span>
+                <span class="cov0" title="0">request, err := s.nats.NATS().Request("user.getdetails", buffUserID.Bytes(), time.Second*2)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Println(err)
+                }</span>
+                <span class="cov0" title="0">time.Sleep(time.Second * 2)
+                user, err := s.nats.DecryptMsgToUser(request.Data)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Println(err)
+                }</span>
+                <span class="cov0" title="0">newCtx := opentracing.ContextWithSpan(ctx, spn)
+                _, err = s.repository.PlaceOrder(newCtx, order.Product, user, spn)
+                if err != nil </span><span class="cov0" title="0">{
+                        fmt.Println(err)
+                }</span>
+        }
+        <span class="cov0" title="0">for </span><span class="cov0" title="0">{
+                _, _ = s.nats.NATS().Subscribe("products.purchase", msgHandler)
+        }</span>
+
+}
+
+// GetOrder - place dto wrapper function around the method that makes calls to the repo...
+func (s *OrderService) GetOrder(ctx context.Context, productId string) (dto.GetOrderResp, error) <span class="cov8" title="1">{
+        spn := s.trace.StartSpan("get-order")
+        defer spn.Finish()
+        _ = level.Info(s.logger).Log("method-invoked", "GetOrder for "+productId)
+        newCtx := opentracing.ContextWithSpan(ctx, spn)
+        result, err := s.repository.GetOrder(newCtx, productId, spn)
+        if err != nil </span><span class="cov0" title="0">{
+                return dto.GetOrderResp{}, err
+        }</span>
+        <span class="cov8" title="1">return dto.GetOrderResp{
+                Status:  "successful",
+                Message: "ok",
+                Order: dto.Order{
+                        ID:              result.ID,
+                        ProductID:       result.ProductID,
+                        UserID:          result.UserID,
+                        TotalCost:       result.TotalCost,
+                        Username:        result.Username,
+                        ProductName:     result.ProductName,
+                        Description:     result.Description,
+                        Price:           result.Price,
+                        Status:          result.Status,
+                        ShippingAddress: result.ShippingAddress,
+                },
+        }, nil</span>
+}
+
+// CancelOrder - place dto wrapper function around the method that makes calls to the repo...
+func (s *OrderService) CancelOrder(ctx context.Context, orderId string) (dto.CancelOrderResp, error) <span class="cov8" title="1">{
+        _ = level.Info(s.logger).Log("method-invoked", "CancelOrder")
+        spn := s.trace.StartSpan("cancel-order")
+        defer spn.Finish()
+        newCtx := opentracing.ContextWithSpan(ctx, spn)
+        resp, err := s.repository.CancelOrder(newCtx, orderId, spn)
+        if err != nil </span><span class="cov0" title="0">{
+                return dto.CancelOrderResp{
+                        Status:  "failed",
+                        Message: err.Error(),
+                }, nil
+        }</span>
+        <span class="cov8" title="1">if resp == "failed" </span><span class="cov8" title="1">{
+                return dto.CancelOrderResp{
+                        Status:  "failed",
+                        Message: fmt.Sprintf("failed "),
+                }, nil
+
+        }</span> else<span class="cov0" title="0"> {
+                return dto.CancelOrderResp{
+                        Status:  "successful",
+                        Message: "successfully canceled the order",
+                }, nil
+
+        }</span>
+}
+
+// GetAllUserOrders - place dto wrapper function around the method that makes calls to the repo...
+func (s *OrderService) GetAllUserOrders(ctx context.Context, userId string) (dto.GetAllUserOrdersResp, error) <span class="cov8" title="1">{
+        _ = level.Info(s.logger).Log("method-invoked", "GetAllUserOrders")
+        spn := s.trace.StartSpan("get-all-user-orders")
+        defer spn.Finish()
+        newCtx := opentracing.ContextWithSpan(ctx, spn)
+        orders, err := s.repository.GetUserAllOrders(newCtx, userId, spn)
+        if err != nil </span><span class="cov0" title="0">{
+                return dto.GetAllUserOrdersResp{
+                        Status:  "failed",
+                        Message: "failed to fetch your orders",
+                        Orders:  nil,
+                }, err
+        }</span>
+        <span class="cov8" title="1">return dto.GetAllUserOrdersResp{
+                Status:  "successful",
+                Message: "list of all orders for the user",
+                Orders:  orders,
+        }, nil</span>
+}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>
