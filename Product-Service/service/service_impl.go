@@ -74,8 +74,9 @@ func (s *ProductService) PurchaseProduct(ctx context.Context, userId, productId 
 func (s *ProductService) GetProductById(ctx context.Context, productId string) (db.Product, error) {
 	_ = level.Info(s.logger).Log("method-invoked", "GetProductById")
 	spn := s.trace.StartSpan("get_product_by_id_service_layer_call")
+	newCtx := opentracing.ContextWithSpan(ctx, spn)
 	defer spn.Finish()
-	resp, err := s.repository.GetProductByID(ctx, productId, spn)
+	resp, err := s.repository.GetProductByID(newCtx, productId, spn)
 	if err != nil {
 		return db.Product{}, err
 	}
