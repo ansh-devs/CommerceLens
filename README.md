@@ -1,5 +1,5 @@
 
-# **Ecommerce Api with NATS**
+# **CommerceLens: Exploring E-commerce Dynamics - A Proof of Concept**
 
 
 ## Structure
