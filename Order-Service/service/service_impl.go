@@ -46,14 +46,14 @@ func NewOrderService(rep repo.Repository, logger log.Logger, tracer opentracing.
 	}
 }
 
-func (r *OrderService) InitNATS() {
-	nc := natsutil.NewNatsComponent(r.SrvID)
+func (s *OrderService) InitNATS() {
+	nc := natsutil.NewNatsComponent(s.SrvID)
 	err := nc.ConnectToNATS("nats://nats-srvr:4222", nil)
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	r.nats = nc
+	s.nats = nc
 }
 
 // PlaceOrder - dto wrapper function around the method that makes calls to the repository.
@@ -124,10 +124,7 @@ func (s *OrderService) CancelOrder(ctx context.Context, orderId string) (dto.Can
 	newCtx := opentracing.ContextWithSpan(ctx, spn)
 	resp, err := s.repository.CancelOrder(newCtx, orderId, spn)
 	if err != nil {
-		return dto.CancelOrderResp{
-			Status:  "failed",
-			Message: err.Error(),
-		}, nil
+		return dto.CancelOrderResp{}, err
 	}
 	if resp == "failed" {
 		return dto.CancelOrderResp{
@@ -152,11 +149,7 @@ func (s *OrderService) GetAllUserOrders(ctx context.Context, userId string) (dto
 	newCtx := opentracing.ContextWithSpan(ctx, spn)
 	orders, err := s.repository.GetUserAllOrders(newCtx, userId, spn)
 	if err != nil {
-		return dto.GetAllUserOrdersResp{
-			Status:  "failed",
-			Message: "failed to fetch your orders",
-			Orders:  nil,
-		}, err
+		return dto.GetAllUserOrdersResp{}, err
 	}
 	return dto.GetAllUserOrdersResp{
 		Status:  "successful",

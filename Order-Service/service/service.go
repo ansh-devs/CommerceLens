@@ -13,7 +13,7 @@ type Service interface {
 	GetOrder(ctx context.Context, productId string) (dto.GetOrderResp, error)
 	// CancelOrder cancels the order with the given orderId.
 	CancelOrder(ctx context.Context, orderId string) (dto.CancelOrderResp, error)
-	// Fetches all the users orders with the provided userId.
+	// GetAllUserOrders Fetches all the users orders with the provided userId.
 	GetAllUserOrders(ctx context.Context, userId string) (dto.GetAllUserOrdersResp, error)
 	// RegisterService Registers the service in consul cluster with the port provided.
 	RegisterService(addr *string)

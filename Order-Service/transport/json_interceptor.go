@@ -8,29 +8,18 @@ import (
 	"net/http"
 )
 
-func JsonResponseEncoder(ctx context.Context, w http.ResponseWriter, resp interface{}) error {
+func JsonResponseEncoder(_ context.Context, w http.ResponseWriter, resp interface{}) error {
 	return json.NewEncoder(w).Encode(resp)
 }
 
-func JsonPlaceOrderResponseDecoder(ctx context.Context, r *http.Request) (interface{}, error) {
-	var req dto.PlaceOrderReq
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		return nil, err
-	}
-	return req, nil
-}
-
-func JsonGetOrderResponseDecoder(ctx context.Context, r *http.Request) (interface{}, error) {
+func JsonGetOrderResponseDecoder(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.GetOrderReq
 	vars := mux.Vars(r)
-	//	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-	//	return nil, err
-	//  }
 	req.OrderID = vars["id"]
 	return req, nil
 }
 
-func JsonCancelOrderResponseDecoder(ctx context.Context, r *http.Request) (interface{}, error) {
+func JsonCancelOrderResponseDecoder(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.CancelOrderReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return nil, err
@@ -38,7 +27,7 @@ func JsonCancelOrderResponseDecoder(ctx context.Context, r *http.Request) (inter
 	return req, nil
 }
 
-func JsonGetAllUserOrdersResponseDecoder(ctx context.Context, r *http.Request) (interface{}, error) {
+func JsonGetAllUserOrdersResponseDecoder(_ context.Context, r *http.Request) (interface{}, error) {
 	var req dto.GetAllUserOrdersReq
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		return nil, err

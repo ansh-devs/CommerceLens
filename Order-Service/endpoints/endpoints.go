@@ -14,6 +14,7 @@ type HttpEndpoints struct {
 	CancelOrder      endpoint.Endpoint
 	GetAllUserOrders endpoint.Endpoint
 }
+
 // NewEndpoints - constructor for the HttpEndpoints.
 func NewEndpoints(s service.Service) *HttpEndpoints {
 	return &HttpEndpoints{
