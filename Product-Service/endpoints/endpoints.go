@@ -2,7 +2,6 @@ package endpoints
 
 import (
 	"context"
-	"fmt"
 	"github.com/ansh-devs/ecomm-poc/product-service/dto"
 	"github.com/ansh-devs/ecomm-poc/product-service/service"
 	"github.com/go-kit/kit/endpoint"
@@ -34,10 +33,6 @@ func makeGetProductByIdEndpoint(s service.Service) endpoint.Endpoint {
 func makeGetAllProductsEndpoint(s service.Service) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (response interface{}, err error) {
 		ok, err := s.GetAllProducts(ctx)
-		if err != nil {
-
-			fmt.Println("Error makeGetAll Ke Andar" + err.Error())
-		}
 		return ok, err
 	}
 }
