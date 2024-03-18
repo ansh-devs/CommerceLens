@@ -11,15 +11,15 @@ type (
 	GetProductReq struct {
 		ProductID string `json:"product_id"`
 	}
-	/*	GetProductResp struct {
+	GetProductResp struct {
 		Status  string  `json:"status"`
 		Message string  `json:"message"`
-		Order   Product `json:"product"`
-	}*/
+		Product Product `json:"product"`
+	}
 	GetAllProductsResp struct {
 		Status  string    `json:"status"`
 		Message string    `json:"message"`
-		Order   []Product `json:"products"`
+		Product []Product `json:"products"`
 	}
 
 	PurchaseOrderReq struct {

@@ -6,7 +6,7 @@ import (
 )
 
 type Service interface {
-	PurchaseProduct(ctx context.Context, userId, productId string) error
+	PurchaseProduct(ctx context.Context, userId, productId string) (db.Product, error)
 	GetProductById(ctx context.Context, productId string) (db.Product, error)
 	GetAllProducts(ctx context.Context) ([]db.Product, error)
 }

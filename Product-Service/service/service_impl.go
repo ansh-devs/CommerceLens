@@ -47,7 +47,7 @@ func NewService(rep repo.Repository, logger log.Logger, tracer opentracing.Trace
 	}
 }
 
-func (s *ProductService) PurchaseProduct(ctx context.Context, userId, productId string) error {
+func (s *ProductService) PurchaseProduct(ctx context.Context, userId, productId string) (db.Product, error) {
 	_ = level.Info(s.logger).Log("method-invoked", "PurchaseOrder")
 	spn := s.trace.StartSpan("purchase-product-product-srv")
 	defer spn.Finish()
@@ -62,13 +62,13 @@ func (s *ProductService) PurchaseProduct(ctx context.Context, userId, productId 
 		},
 	}
 	if err != nil {
-		return err
+		return db.Product{}, err
 	}
 	err = s.nats.Publish("products.purchase", order)
 	if err != nil {
-		return err
+		return db.Product{}, err
 	} else {
-		return nil
+		return db.Product{}, nil
 	}
 }
 func (s *ProductService) GetProductById(ctx context.Context, productId string) (db.Product, error) {
