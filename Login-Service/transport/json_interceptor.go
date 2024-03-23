@@ -3,7 +3,7 @@ package transport
 import (
 	"context"
 	"encoding/json"
-	"github.com/ansh-devs/ecomm-poc/login-service/dto"
+	"github.com/ansh-devs/commercelens/login-service/dto"
 	"github.com/gorilla/mux"
 	"net/http"
 )

@@ -2,7 +2,7 @@ package repo
 
 import (
 	"context"
-	"github.com/ansh-devs/ecomm-poc/login-service/dto"
+	"github.com/ansh-devs/commercelens/login-service/dto"
 )
 
 type Repository interface {

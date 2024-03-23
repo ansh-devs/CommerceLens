@@ -1,4 +1,4 @@
-module github.com/ansh-devs/ecomm-poc/order-service
+module github.com/ansh-devs/commercelens/order-service
 
 go 1.20
 

@@ -7,9 +7,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ansh-devs/ecomm-poc/order-service/dto"
-	"github.com/ansh-devs/ecomm-poc/order-service/natsutil"
-	"github.com/ansh-devs/ecomm-poc/order-service/repo"
+	"github.com/ansh-devs/commercelens/order-service/dto"
+	"github.com/ansh-devs/commercelens/order-service/natsutil"
+	"github.com/ansh-devs/commercelens/order-service/repo"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/hashicorp/consul/api"

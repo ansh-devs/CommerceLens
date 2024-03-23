@@ -3,7 +3,7 @@ package repo
 import (
 	"context"
 
-	"github.com/ansh-devs/ecomm-poc/order-service/dto"
+	"github.com/ansh-devs/commercelens/order-service/dto"
 	"github.com/opentracing/opentracing-go"
 )
 

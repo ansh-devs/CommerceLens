@@ -5,7 +5,7 @@ import (
 	"encoding/gob"
 	"sync"
 
-	"github.com/ansh-devs/ecomm-poc/order-service/dto"
+	"github.com/ansh-devs/commercelens/order-service/dto"
 	"github.com/nats-io/nats.go"
 )
 

@@ -5,7 +5,7 @@ package repo
 import (
 	context "context"
 
-	db "github.com/ansh-devs/ecomm-poc/product-service/db/generated"
+	db "github.com/ansh-devs/commercelens/product-service/db/generated"
 	mock "github.com/stretchr/testify/mock"
 
 	opentracing "github.com/opentracing/opentracing-go"

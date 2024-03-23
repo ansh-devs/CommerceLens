@@ -1,6 +1,6 @@
 with-expecter: True
 packages:
-  github.com/ansh-devs/ecomm-poc/product-service/repo:
+  github.com/ansh-devs/commercelens/product-service/repo:
     interfaces:
       Repository:
         config:

@@ -2,8 +2,8 @@ package endpoints
 
 import (
 	"context"
-	"github.com/ansh-devs/ecomm-poc/product-service/dto"
-	"github.com/ansh-devs/ecomm-poc/product-service/service"
+	"github.com/ansh-devs/commercelens/product-service/dto"
+	"github.com/ansh-devs/commercelens/product-service/service"
 	"github.com/go-kit/kit/endpoint"
 )
 

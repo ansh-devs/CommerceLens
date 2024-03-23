@@ -1,7 +1,7 @@
 package transport
 
 import (
-	"github.com/ansh-devs/ecomm-poc/order-service/endpoints"
+	"github.com/ansh-devs/commercelens/order-service/endpoints"
 	transport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"net/http"

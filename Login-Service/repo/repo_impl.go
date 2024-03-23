@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"time"
 
-	db "github.com/ansh-devs/ecomm-poc/login-service/db/generated"
-	"github.com/ansh-devs/ecomm-poc/login-service/dto"
+	db "github.com/ansh-devs/commercelens/login-service/db/generated"
+	"github.com/ansh-devs/commercelens/login-service/dto"
 	"github.com/go-kit/log"
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"

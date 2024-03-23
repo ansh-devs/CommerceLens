@@ -1,4 +1,4 @@
-module github.com/ansh-devs/ecomm-poc/login-service
+module github.com/ansh-devs/commercelens/login-service
 
 go 1.20
 

@@ -1,7 +1,7 @@
 
 # **CommerceLens: Exploring E-commerce Dynamics - A Proof of Concept**
 
-![Project Structure](https://raw.githubusercontent.com/ansh-devs/ecomm-poc/main/assets/project_scaffolding.png)
+![Project Structure](https://raw.githubusercontent.com/ansh-devs/commercelens/main/assets/project_scaffolding.png)
 
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/t/ansh-devs/CommerceLens?style=for-the-badge&labelColor=%23000000&color=%23C1F0EC)
 
@@ -17,9 +17,9 @@
 
 * With a strong focus on performance optimization and horizontal scalability, CommerceLens can handle massive volumes of traffic and transactions with ease. Its advanced load balancing and auto-scaling mechanisms dynamically allocate resources based on real-time demand, ensuring seamless user experiences during peak periods and efficiently managing costs during quieter times.
 
-CommerceLens also prioritizes security and compliance, with built-in features for data encryption, access control, and auditing, ensuring that your customers' sensitive information and transactions are safeguarded against potential threats.
+* CommerceLens also prioritizes security and compliance, with built-in features for data encryption, access control, and auditing, ensuring that your customers' sensitive information and transactions are safeguarded against potential threats.
 
-Whether you're a small business looking to establish an online presence or a large enterprise seeking to revolutionize your digital commerce strategy, CommerceLens empowers you with the flexibility, scalability, and resilience to thrive in the ever-changing ecommerce landscape.
+* Whether you're a small business looking to establish an online presence or a large enterprise seeking to revolutionize your digital commerce strategy, CommerceLens empowers you with the flexibility, scalability, and resilience to thrive in the ever-changing ecommerce landscape.
 
 
 

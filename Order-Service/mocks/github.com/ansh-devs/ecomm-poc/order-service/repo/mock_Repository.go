@@ -5,7 +5,7 @@ package repo
 import (
 	context "context"
 
-	dto "github.com/ansh-devs/ecomm-poc/order-service/dto"
+	dto "github.com/ansh-devs/commercelens/order-service/dto"
 	mock "github.com/stretchr/testify/mock"
 
 	opentracing "github.com/opentracing/opentracing-go"

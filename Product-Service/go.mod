@@ -1,4 +1,4 @@
-module github.com/ansh-devs/ecomm-poc/product-service
+module github.com/ansh-devs/commercelens/product-service
 
 go 1.20
 

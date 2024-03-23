@@ -2,7 +2,7 @@ package transport
 
 import (
 	"context"
-	"github.com/ansh-devs/ecomm-poc/product-service/endpoints"
+	"github.com/ansh-devs/commercelens/product-service/endpoints"
 	transport "github.com/go-kit/kit/transport/http"
 	"github.com/gorilla/mux"
 	"net/http"

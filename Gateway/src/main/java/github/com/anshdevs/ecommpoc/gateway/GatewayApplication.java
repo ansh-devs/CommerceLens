@@ -1,4 +1,4 @@
-package github.com.anshdevs.ecommpoc.gateway;
+package github.com.anshdevs.commercelens.gateway;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

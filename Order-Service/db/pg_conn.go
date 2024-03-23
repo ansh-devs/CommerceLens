@@ -6,7 +6,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"time"
 
-	db "github.com/ansh-devs/ecomm-poc/order-service/db/generated"
+	db "github.com/ansh-devs/commercelens/order-service/db/generated"
 )
 
 func dbConfWithPool(url string) *pgxpool.Config {

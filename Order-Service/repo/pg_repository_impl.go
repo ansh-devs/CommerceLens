@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	db "github.com/ansh-devs/ecomm-poc/order-service/db/generated"
-	"github.com/ansh-devs/ecomm-poc/order-service/dto"
+	db "github.com/ansh-devs/commercelens/order-service/db/generated"
+	"github.com/ansh-devs/commercelens/order-service/dto"
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/google/uuid"

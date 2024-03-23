@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	db "github.com/ansh-devs/ecomm-poc/product-service/db/generated"
-	"github.com/ansh-devs/ecomm-poc/product-service/mocks/github.com/ansh-devs/ecomm-poc/product-service/repo"
+	db "github.com/ansh-devs/commercelens/product-service/db/generated"
+	"github.com/ansh-devs/commercelens/product-service/mocks/github.com/ansh-devs/commercelens/product-service/repo"
 	"github.com/go-kit/log"
 	"github.com/google/uuid"
 	"github.com/opentracing/opentracing-go"
