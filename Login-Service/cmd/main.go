@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"io"
 	"net/http"
@@ -10,7 +9,6 @@ import (
 	"os/signal"
 	"syscall"
 
-	config2 "github.com/ansh-devs/commercelens/login-service/config"
 	"github.com/ansh-devs/commercelens/login-service/db"
 	"github.com/ansh-devs/commercelens/login-service/endpoints"
 	"github.com/ansh-devs/commercelens/login-service/repo"
@@ -25,9 +23,7 @@ import (
 )
 
 func main() {
-	config2.InitEnvConfigs()
-	var httpAddr = &config2.AppConfigs.HttpAddr
-	//var httpAddr = flag.String("http", ":8081", "http listen address")
+	var httpAddr = os.Getenv("HTTPPORT")
 	tracer := opentracing.GlobalTracer()
 	cfg := &config.Configuration{
 		ServiceName: "login-service",
@@ -64,18 +60,15 @@ func main() {
 	}
 	_ = level.Info(logger).Log("msg", "service started")
 
-	flag.Parse()
 	ctx := context.Background()
 	var srv *service.LoginService
 	{
-
 		var dbSource = fmt.Sprintf("postgres://%s:%s@%s/%s",
-			config2.AppConfigs.DatabaseUser,
-			config2.AppConfigs.DatabasePassword,
-			config2.AppConfigs.DatabaseHost,
-			config2.AppConfigs.DatabaseName,
+			os.Getenv("DBUSER"),
+			os.Getenv("DBPASSWORD"),
+			os.Getenv("DBHOST"),
+			os.Getenv("DBNAME"),
 		)
-
 		dbConn := db.MustConnectToPostgress(dbSource)
 		repository := repo.NewPostgresRepo(dbConn, logger, tracer)
 		srv = service.NewService(repository, logger, tracer)
@@ -88,13 +81,13 @@ func main() {
 	}()
 
 	endpoint := endpoints.NewEndpoints(srv)
-	srv.RegisterService(httpAddr)
+	srv.RegisterService(&httpAddr)
 	go srv.UpdateHealthStatus()
 
 	go func() {
-		fmt.Println("listening on port", *httpAddr)
+		fmt.Println("listening on port", httpAddr)
 		handler := transport.NewHttpServer(ctx, endpoint)
-		errs <- http.ListenAndServe(*httpAddr, handler)
+		errs <- http.ListenAndServe(httpAddr, handler)
 	}()
 
 	for sig := range errs {

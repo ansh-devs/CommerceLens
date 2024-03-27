@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"net"
 	"strconv"
+	"time"
 
 	"github.com/ansh-devs/commercelens/login-service/dto"
 	"github.com/ansh-devs/commercelens/login-service/natsutil"
@@ -14,8 +15,6 @@ import (
 	"github.com/go-kit/log"
 	"github.com/go-kit/log/level"
 	"github.com/hashicorp/consul/api"
-	"github.com/nats-io/nats.go"
-	"github.com/opentracing/opentracing-go"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -51,6 +50,7 @@ func NewService(rep repo.Repository, logger log.Logger, tracer opentracing.Trace
 
 func (s *LoginService) GetUserWithNats(ctx context.Context) {
 	nc := s.nats.NATS()
+	tkr := time.NewTicker(time.Second * 1)
 	for {
 		_, err := nc.Subscribe("user.getdetails", func(msg *nats.Msg) {
 			str, _ := s.nats.DecryptMsgToUserId(msg.Data)
@@ -64,6 +64,7 @@ func (s *LoginService) GetUserWithNats(ctx context.Context) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		<-tkr.C
 	}
 }
 func (s *LoginService) RegisterUser(ctx context.Context, payload dto.RegisterUserRequest) (dto.RegisterUserResponse, error) {

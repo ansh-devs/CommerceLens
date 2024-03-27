@@ -4,7 +4,6 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	config2 "github.com/ansh-devs/commercelens/product-service/config"
 	"github.com/ansh-devs/commercelens/product-service/db"
 	"github.com/ansh-devs/commercelens/product-service/endpoints"
 	"github.com/ansh-devs/commercelens/product-service/repo"
@@ -24,9 +23,7 @@ import (
 )
 
 func main() {
-	config2.InitEnvConfigs()
-	var httpAddr = &config2.AppConfigs.HttpAddr
-	//var httpAddr = flag.String("http", ":8080", "http listen address")
+	var httpAddr = os.Getenv("HTTPPORT")
 	tracer := opentracing.GlobalTracer()
 	cfg := &config.Configuration{
 		ServiceName: "Product Service",
@@ -35,6 +32,7 @@ func main() {
 			Param: 1,
 		},
 		Reporter: &config.ReporterConfig{
+
 			// LocalAgentHostPort - Explicitly giving jaeger host to connect as defined in docker-compose file...
 			LocalAgentHostPort: "tracer:6831",
 			LogSpans:           true,
@@ -70,10 +68,10 @@ func main() {
 	var srv *service.ProductService
 	{
 		var dbSource = fmt.Sprintf("postgres://%s:%s@%s/%s",
-			config2.AppConfigs.DatabaseUser,
-			config2.AppConfigs.DatabasePassword,
-			config2.AppConfigs.DatabaseHost,
-			config2.AppConfigs.DatabaseName,
+			os.Getenv("DBUSER"),
+			os.Getenv("DBPASSWORD"),
+			os.Getenv("DBHOST"),
+			os.Getenv("DBNAME"),
 		)
 
 		dbConn := db.MustConnectToPostgress(dbSource)
@@ -88,13 +86,13 @@ func main() {
 	}()
 
 	endpoint := endpoints.NewEndpoints(srv)
-	srv.RegisterService(httpAddr)
+	srv.RegisterService(&httpAddr)
 	go srv.UpdateHealthStatus()
 
 	go func() {
-		fmt.Println("listening on port", *httpAddr)
+		fmt.Println("listening on port", httpAddr)
 		handler := transport.NewHttpServer(ctx, endpoint)
-		errs <- http.ListenAndServe(*httpAddr, handler)
+		errs <- http.ListenAndServe(httpAddr, handler)
 	}()
 
 	for sig := range errs {

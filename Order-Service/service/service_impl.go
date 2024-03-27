@@ -82,8 +82,14 @@ func (s *OrderService) PlaceOrder(ctx context.Context) {
 			fmt.Println(err)
 		}
 	}
+	tkr := time.NewTicker(time.Second * 1)
 	for {
-		_, _ = s.nats.NATS().Subscribe("products.purchase", msgHandler)
+		_, err := s.nats.NATS().Subscribe("products.purchase", msgHandler)
+		if err != nil {
+			fmt.Println(err)
+		}
+		<-tkr.C
+
 	}
 
 }

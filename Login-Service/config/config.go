@@ -1,13 +1,9 @@
 package config
 
-import "log"
+import (
+	"log"
+)
 import "github.com/spf13/viper"
-
-var AppConfigs *AppConfig
-
-func InitEnvConfigs() {
-	AppConfigs = loadEnvVariables()
-}
 
 type AppConfig struct {
 	HttpAddr         string `mapstructure:"HTTPPORT"`
@@ -17,11 +13,14 @@ type AppConfig struct {
 	DatabasePassword string `mapstructure:"DBPASSWORD"`
 }
 
-func loadEnvVariables() (config *AppConfig) {
-	viper.AddConfigPath(".")
-	viper.AddConfigPath("/app")
+var AppConfigs *AppConfig
+
+func LoadEnvVariables() (config *AppConfig) {
+	viper.SetDefault("HTTPPORT", ":8080")
 	viper.SetConfigName(".env")
 	viper.SetConfigType("env")
+	viper.AddConfigPath(".")
+	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {
 		log.Fatal("Error reading env file", err)
 	}
@@ -29,5 +28,6 @@ func loadEnvVariables() (config *AppConfig) {
 	if err := viper.Unmarshal(&config); err != nil {
 		log.Fatal(err)
 	}
+	AppConfigs = config
 	return
 }
