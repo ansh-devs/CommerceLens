@@ -6,20 +6,6 @@ package db
 
 import ()
 
-type Order struct {
-	ID          string      `json:"id"`
-	ProductID   string      `json:"product_id"`
-	UserID      string      `json:"user_id"`
-	TotalCost   string      `json:"total_cost"`
-	Status      string      `json:"status"`
-	Fullname    string      `json:"fullname"`
-	Address     string      `json:"address"`
-	ProductName string      `json:"product_name"`
-	Description string      `json:"description"`
-	Price       string      `json:"price"`
-	CreatedAt   interface{} `json:"created_at"`
-}
-
 type Product struct {
 	ID          string      `json:"id"`
 	ProductName string      `json:"product_name"`
