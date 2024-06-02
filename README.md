@@ -7,7 +7,7 @@
 
 ![GitHub last commit](https://img.shields.io/github/last-commit/ansh-devs/CommerceLens?style=for-the-badge&labelColor=%23000000&color=%23C1F0EC)
 
-![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ansh-devs/CommerceLens/ci.yml?branch=main&event=push&style=for-the-badge&labelColor=%23000000&color=%23C1F0EC)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/ansh-devs/CommerceLens/tests-workflow.yml?branch=main&event=push&style=for-the-badge&labelColor=%23000000&color=%23C1F0EC)
 
 * CommerceLens is a cutting-edge ecommerce platform that revolutionizes the way businesses approach online sales and customer experiences. Designed from the ground up with a modern, distributed system architecture and leveraging the power of microservices, CommerceLens delivers unparalleled scalability, resilience, and agility to meet the ever-evolving demands of the digital commerce landscape.
 
