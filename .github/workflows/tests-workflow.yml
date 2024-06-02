@@ -1,0 +1,22 @@
+name: TestOrderService
+
+on: ["push"]
+
+jobs:
+    audit:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Setup Go
+              uses: actions/setup-go@v4
+              with:
+                  go-version: "1.22.x"
+
+            - name: Verify dependencies
+              working-directory: ./Order-Service
+              run: go mod verify
+
+            - name: Test Order Service
+              working-directory: ./Order-Service  
+              run: go test ./...
+    
